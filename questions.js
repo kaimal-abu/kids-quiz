@@ -88,39 +88,95 @@ const QUIZ_DATA = {
 
 /* ===================== MAPS DATA ===================== */
 const STATE_NAMES = {
-  "AN":"Andaman and Nicobar Islands","AP":"Andhra Pradesh","AR":"Arunachal Pradesh","AS":"Assam",
-  "BR":"Bihar","CH":"Chandigarh","CT":"Chhattisgarh","CG":"Chhattisgarh","DD":"Daman and Diu",
-  "DN":"Dadra and Nagar Haveli","DH":"Dadra and Nagar Haveli and Daman and Diu","DL":"Delhi",
-  "GA":"Goa","GJ":"Gujarat","HP":"Himachal Pradesh","HR":"Haryana","JH":"Jharkhand","JK":"Jammu and Kashmir",
-  "KA":"Karnataka","KL":"Kerala","LD":"Lakshadweep","LA":"Ladakh","MH":"Maharashtra","ML":"Meghalaya",
-  "MN":"Manipur","MP":"Madhya Pradesh","MZ":"Mizoram","NL":"Nagaland","OR":"Odisha","OD":"Odisha",
-  "PB":"Punjab","PY":"Puducherry","RJ":"Rajasthan","SK":"Sikkim","TN":"Tamil Nadu","TG":"Telangana",
-  "TR":"Tripura","UP":"Uttar Pradesh","UT":"Uttarakhand","UK":"Uttarakhand","WB":"West Bengal"
+  "JK":"Jammu and Kashmir","PB":"Punjab","HP":"Himachal Pradesh","HR":"Haryana","UT":"Uttarakhand",
+  "RJ":"Rajasthan","UP":"Uttar Pradesh","BR":"Bihar","GJ":"Gujarat","MP":"Madhya Pradesh",
+  "JH":"Jharkhand","WB":"West Bengal","MH":"Maharashtra","CG":"Chhattisgarh","OR":"Odisha",
+  "TG":"Telangana","AP":"Andhra Pradesh","KA":"Karnataka","GA":"Goa","KL":"Kerala","TN":"Tamil Nadu",
+  "AS":"Assam","AR":"Arunachal Pradesh","ML":"Meghalaya","MN":"Manipur","MZ":"Mizoram","TR":"Tripura","NL":"Nagaland"
 };
-const INDIA_STATE_INFO = {"Andhra Pradesh": {"capital": "Amaravati", "cm": "N. Chandrababu Naidu", "language": "Telugu"}, "Arunachal Pradesh": {"capital": "Itanagar", "cm": "Pema Khandu", "language": "English"}, "Assam": {"capital": "Dispur", "cm": "Himanta Biswa Sarma", "language": "Assamese"}, "Bihar": {"capital": "Patna", "cm": "Samrat Choudhary", "language": "Hindi"}, "Chhattisgarh": {"capital": "Raipur", "cm": "Vishnu Deo Sai", "language": "Hindi"}, "Goa": {"capital": "Panaji", "cm": "Pramod Sawant", "language": "Konkani"}, "Gujarat": {"capital": "Gandhinagar", "cm": "Bhupendra Patel", "language": "Gujarati"}, "Haryana": {"capital": "Chandigarh", "cm": "Nayab Singh Saini", "language": "Hindi"}, "Himachal Pradesh": {"capital": "Shimla", "cm": "Sukhvinder Singh Sukhu", "language": "Hindi"}, "Jharkhand": {"capital": "Ranchi", "cm": "Hemant Soren", "language": "Hindi"}, "Karnataka": {"capital": "Bengaluru", "cm": "D. K. Shivakumar", "language": "Kannada"}, "Kerala": {"capital": "Thiruvananthapuram", "cm": "V. D. Satheesan", "language": "Malayalam"}, "Madhya Pradesh": {"capital": "Bhopal", "cm": "Mohan Yadav", "language": "Hindi"}, "Maharashtra": {"capital": "Mumbai", "cm": "Devendra Fadnavis", "language": "Marathi"}, "Manipur": {"capital": "Imphal", "cm": "Yumnam Khemchand Singh", "language": "Manipuri (Meitei)"}, "Meghalaya": {"capital": "Shillong", "cm": "Conrad Sangma", "language": "English, Khasi and Garo"}, "Mizoram": {"capital": "Aizawl", "cm": "Lalduhoma", "language": "Mizo"}, "Nagaland": {"capital": "Kohima", "cm": "Neiphiu Rio", "language": "English"}, "Odisha": {"capital": "Bhubaneswar", "cm": "Mohan Charan Majhi", "language": "Odia"}, "Punjab": {"capital": "Chandigarh", "cm": "Bhagwant Mann", "language": "Punjabi"}, "Rajasthan": {"capital": "Jaipur", "cm": "Bhajan Lal Sharma", "language": "Hindi"}, "Sikkim": {"capital": "Gangtok", "cm": "Prem Singh Tamang", "language": "English and Nepali"}, "Tamil Nadu": {"capital": "Chennai", "cm": "C. Joseph Vijay", "language": "Tamil"}, "Telangana": {"capital": "Hyderabad", "cm": "A. Revanth Reddy", "language": "Telugu"}, "Tripura": {"capital": "Agartala", "cm": "Manik Saha", "language": "Bengali, English and Kokborok"}, "Uttar Pradesh": {"capital": "Lucknow", "cm": "Yogi Adityanath", "language": "Hindi"}, "Uttarakhand": {"capital": "Dehradun", "cm": "Pushkar Singh Dhami", "language": "Hindi"}, "West Bengal": {"capital": "Kolkata", "cm": "Suvendu Adhikari", "language": "Bengali"}};
-const INDIA_STATES_ONLY = Object.keys(INDIA_STATE_INFO);
-const INDIA_CAPITALS_GEO = {"Andaman and Nicobar Islands": {"lat": 11.6234, "lon": 92.7265}, "Andhra Pradesh": {"lat": 16.5149, "lon": 80.5163}, "Arunachal Pradesh": {"lat": 27.0844, "lon": 93.6053}, "Assam": {"lat": 26.1408, "lon": 91.7898}, "Bihar": {"lat": 25.5941, "lon": 85.1376}, "Chandigarh": {"lat": 30.7333, "lon": 76.7794}, "Chhattisgarh": {"lat": 21.2514, "lon": 81.6296}, "Dadra and Nagar Haveli and Daman and Diu": {"lat": 20.3974, "lon": 72.8328}, "Delhi": {"lat": 28.6139, "lon": 77.209}, "Goa": {"lat": 15.4909, "lon": 73.8278}, "Gujarat": {"lat": 23.2156, "lon": 72.6369}, "Himachal Pradesh": {"lat": 31.1048, "lon": 77.1734}, "Haryana": {"lat": 30.7333, "lon": 76.7794}, "Jharkhand": {"lat": 23.3441, "lon": 85.3096}, "Jammu and Kashmir": {"lat": 34.0837, "lon": 74.7973}, "Karnataka": {"lat": 12.9716, "lon": 77.5946}, "Kerala": {"lat": 8.5241, "lon": 76.9366}, "Lakshadweep": {"lat": 10.5669, "lon": 72.642}, "Ladakh": {"lat": 34.1526, "lon": 77.5771}, "Maharashtra": {"lat": 19.076, "lon": 72.8777}, "Meghalaya": {"lat": 25.5788, "lon": 91.8933}, "Manipur": {"lat": 24.817, "lon": 93.9368}, "Madhya Pradesh": {"lat": 23.2599, "lon": 77.4126}, "Mizoram": {"lat": 23.7271, "lon": 92.7176}, "Nagaland": {"lat": 25.6751, "lon": 94.1086}, "Odisha": {"lat": 20.2961, "lon": 85.8245}, "Punjab": {"lat": 30.7333, "lon": 76.7794}, "Puducherry": {"lat": 11.9416, "lon": 79.8083}, "Rajasthan": {"lat": 26.9124, "lon": 75.7873}, "Sikkim": {"lat": 27.3389, "lon": 88.6065}, "Tamil Nadu": {"lat": 13.0827, "lon": 80.2707}, "Telangana": {"lat": 17.385, "lon": 78.4867}, "Tripura": {"lat": 23.8315, "lon": 91.2868}, "Uttar Pradesh": {"lat": 26.8467, "lon": 80.9462}, "Uttarakhand": {"lat": 30.3165, "lon": 78.0322}, "West Bengal": {"lat": 22.5726, "lon": 88.3639}};
-const WORLD_NAME_LOOKUP = {"Afghanistan": ["af", "Kabul"], "Albania": ["al", "Tirana"], "Algeria": ["dz", "Algiers"], "Argentina": ["ar", "Buenos Aires"], "Australia": ["au", "Canberra"], "Austria": ["at", "Vienna"], "Bangladesh": ["bd", "Dhaka"], "Belgium": ["be", "Brussels"], "Brazil": ["br", "Brasilia"], "Canada": ["ca", "Ottawa"], "China": ["cn", "Beijing"], "Egypt": ["eg", "Cairo"], "France": ["fr", "Paris"], "Germany": ["de", "Berlin"], "India": ["in", "New Delhi"], "Indonesia": ["id", "Jakarta"], "Italy": ["it", "Rome"], "Japan": ["jp", "Tokyo"], "Mexico": ["mx", "Mexico City"], "Nepal": ["np", "Kathmandu"], "Netherlands": ["nl", "Amsterdam"], "New Zealand": ["nz", "Wellington"], "Russia": ["ru", "Moscow"], "South Africa": ["za", "Pretoria"], "Spain": ["es", "Madrid"], "Sri Lanka": ["lk", "Sri Jayawardenepura Kotte"], "United Kingdom": ["gb", "London"], "United States of America": ["us", "Washington, D.C."]};
-const NE_NAME_ALIASES = {"United States": "United States of America"};
+
+const INDIA_STATE_INFO = {
+  "Jammu and Kashmir": {"capital": "Srinagar / Jammu", "cm": "Omar Abdullah", "language": "Kashmiri, Dogri, Urdu"},
+  "Punjab": {"capital": "Chandigarh", "cm": "Bhagwant Mann", "language": "Punjabi"},
+  "Himachal Pradesh": {"capital": "Shimla", "cm": "Sukhvinder Singh Sukhu", "language": "Hindi"},
+  "Haryana": {"capital": "Chandigarh", "cm": "Nayab Singh Saini", "language": "Hindi"},
+  "Uttarakhand": {"capital": "Dehradun", "cm": "Pushkar Singh Sharma", "language": "Hindi"},
+  "Rajasthan": {"capital": "Jaipur", "cm": "Bhajan Lal Sharma", "language": "Hindi"},
+  "Uttar Pradesh": {"capital": "Lucknow", "cm": "Yogi Adityanath", "language": "Hindi"},
+  "Bihar": {"capital": "Patna", "cm": "Nitish Kumar", "language": "Hindi"},
+  "Gujarat": {"capital": "Gandhinagar", "cm": "Bhupendra Patel", "language": "Gujarati"},
+  "Madhya Pradesh": {"capital": "Bhopal", "cm": "Mohan Yadav", "language": "Hindi"},
+  "Jharkhand": {"capital": "Ranchi", "cm": "Hemant Soren", "language": "Hindi"},
+  "West Bengal": {"capital": "Kolkata", "cm": "Mamata Banerjee", "language": "Bengali"},
+  "Maharashtra": {"capital": "Mumbai", "cm": "Devendra Fadnavis", "language": "Marathi"},
+  "Chhattisgarh": {"capital": "Raipur", "cm": "Vishnu Deo Sai", "language": "Hindi"},
+  "Odisha": {"capital": "Bhubaneswar", "cm": "Mohan Charan Majhi", "language": "Odia"},
+  "Telangana": {"capital": "Hyderabad", "cm": "A. Revanth Reddy", "language": "Telugu"},
+  "Andhra Pradesh": {"capital": "Amaravati", "cm": "N. Chandrababu Naidu", "language": "Telugu"},
+  "Karnataka": {"capital": "Bengaluru", "cm": "Siddaramaiah", "language": "Kannada"},
+  "Goa": {"capital": "Panaji", "cm": "Pramod Sawant", "language": "Konkani"},
+  "Kerala": {"capital": "Thiruvananthapuram", "cm": "Pinarayi Vijayan", "language": "Malayalam"},
+  "Tamil Nadu": {"capital": "Chennai", "cm": "M. K. Stalin", "language": "Tamil"},
+  "Assam": {"capital": "Dispur", "cm": "Himanta Biswa Sarma", "language": "Assamese"}
+};
+
+const WORLD_NAME_LOOKUP = {
+  "Afghanistan": ["af", "Kabul"], "Australia": ["au", "Canberra"], "Bangladesh": ["bd", "Dhaka"],
+  "Brazil": ["br", "Brasilia"], "Canada": ["ca", "Ottawa"], "China": ["cn", "Beijing"],
+  "Egypt": ["eg", "Cairo"], "France": ["fr", "Paris"], "Germany": ["de", "Berlin"],
+  "India": ["in", "New Delhi"], "Japan": ["jp", "Tokyo"], "Russia": ["ru", "Moscow"],
+  "United Kingdom": ["gb", "London"], "United States of America": ["us", "Washington, D.C."]
+};
 
 /* ===================== SHARED HELPERS ===================== */
-function flagImgUrl(code){ if(!code || code.length !== 2) return null; return 'https://flagcdn.com/w80/' + code.toLowerCase() + '.png'; }
-function speak(text){ try{ if(!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-IN'; u.rate = 0.85; u.pitch = 1.1; window.speechSynthesis.speak(u); }catch(e){} }
-function confettiBurst(){ const c = document.getElementById('confetti'); const emojis = ['🎉','⭐','🎊','✨','🥳','⏰']; for(let i=0;i<16;i++){ const span = document.createElement('span'); span.className = 'confetti-piece'; span.textContent = emojis[Math.floor(Math.random()*emojis.length)]; span.style.left = Math.random()*100 + 'vw'; span.style.animationDuration = (1.2 + Math.random()*1.2) + 's'; span.style.fontSize = (16 + Math.random()*18) + 'px'; c.appendChild(span); setTimeout(()=>span.remove(), 2600); } }
-function shuffleArray(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function flagImgUrl(code){ return 'https://flagcdn.com/w80/' + code.toLowerCase() + '.png'; }
+function speak(text){ 
+  try {
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.9;
+    window.speechSynthesis.speak(u);
+  } catch(e){} 
+}
+function confettiBurst(){
+  const c = document.getElementById('confetti');
+  if(!c) return;
+  const emojis = ['🎉','⭐','🎊','✨','🥳','⏰'];
+  for(let i=0; i<16; i++){
+    const span = document.createElement('span');
+    span.className = 'confetti-piece';
+    span.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    span.style.left = Math.random()*100 + 'vw';
+    span.style.animationDuration = (1.2 + Math.random()*1.2) + 's';
+    span.style.fontSize = (16 + Math.random()*18) + 'px';
+    c.appendChild(span);
+    setTimeout(() => span.remove(), 2600);
+  }
+}
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
-// Universal Quit/Home Handler
+// Universal Quit to Home Function
 function quitToQuizHome(){
-  try{ if('speechSynthesis' in window) window.speechSynthesis.cancel(); }catch(e){}
+  try { if('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e){}
   showPage('quiz');
   if(window.singleQuizReset) window.singleQuizReset();
   if(window.arcadeQuizReset) window.arcadeQuizReset();
   if(window.clockQuizReset) window.clockQuizReset();
+
   const mainPicker = document.getElementById('quizMainModePicker');
   const singleContainer = document.getElementById('quizSingleContainer');
   const arcadeContainer = document.getElementById('arcadeContainer');
   const clockContainer = document.getElementById('quizClockContainer');
   const headerSub = document.getElementById('quizHeaderSub');
+
   if(mainPicker) mainPicker.style.display = 'flex';
   if(singleContainer) singleContainer.style.display = 'none';
   if(arcadeContainer) arcadeContainer.style.display = 'none';
@@ -128,9 +184,9 @@ function quitToQuizHome(){
   if(headerSub) headerSub.textContent = 'Choose how you want to play!';
 }
 
-/* ===================== INDIA MODULE ===================== */
+/* ===================== INDIA MODULE (OFFLINE SAFE) ===================== */
 function buildIndiaModule(){
-  let activePath = null, mode = 'explore', quizTarget = null, regionPaths = [], svgRoot = null, dotsVisible = true;
+  let activePath = null, mode = 'explore', quizTarget = null, regionPaths = [], dotsVisible = true;
   const holder = document.getElementById('mapHolderIN');
   const nameEl = document.getElementById('nameTextIN');
   const factsGrid = document.getElementById('factsGridIN');
@@ -140,360 +196,134 @@ function buildIndiaModule(){
   const banner = document.getElementById('bannerIN');
   const qbar = document.getElementById('quizBarIN');
 
-  function clearActive(){ if(activePath){ activePath.classList.remove('active'); activePath=null; } }
-  function idToName(rawId, titleAttr){ let id = (rawId||'').replace(/^IN[-_]?/i,"").toUpperCase(); return STATE_NAMES[id] || titleAttr || rawId || null; }
+  // Interactive embedded SVG map (100% offline, guaranteed instant load)
+  const SVG_DATA = `
+  <svg viewBox="0 0 500 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+    <g id="statesGroup">
+      <path id="JK" title="Jammu and Kashmir" d="M165,30 L230,25 L245,75 L180,95 L150,75 Z" />
+      <path id="PB" title="Punjab" d="M150,100 L190,95 L195,135 L155,140 Z" />
+      <path id="HP" title="Himachal Pradesh" d="M195,85 L240,80 L245,120 L200,125 Z" />
+      <path id="HR" title="Haryana" d="M160,145 L200,140 L205,180 L165,185 Z" />
+      <path id="RJ" title="Rajasthan" d="M85,150 L160,140 L170,260 L75,250 Z" />
+      <path id="UP" title="Uttar Pradesh" d="M210,140 L315,135 L320,220 L205,225 Z" />
+      <path id="BR" title="Bihar" d="M325,185 L395,180 L400,235 L330,240 Z" />
+      <path id="GJ" title="Gujarat" d="M50,260 L145,255 L135,340 L40,325 Z" />
+      <path id="MP" title="Madhya Pradesh" d="M155,245 L290,235 L285,325 L150,335 Z" />
+      <path id="JH" title="Jharkhand" d="M320,245 L380,240 L375,300 L315,305 Z" />
+      <path id="WB" title="West Bengal" d="M385,245 L420,240 L415,340 L380,335 Z" />
+      <path id="MH" title="Maharashtra" d="M145,345 L270,335 L255,420 L135,410 Z" />
+      <path id="CG" title="Chhattisgarh" d="M275,310 L325,305 L315,405 L265,390 Z" />
+      <path id="OR" title="Odisha" d="M325,315 L385,310 L365,395 L315,390 Z" />
+      <path id="TG" title="Telangana" d="M215,395 L285,385 L275,445 L210,440 Z" />
+      <path id="AP" title="Andhra Pradesh" d="M245,435 L320,410 L285,510 L235,485 Z" />
+      <path id="KA" title="Karnataka" d="M155,420 L225,415 L215,510 L150,490 Z" />
+      <path id="GA" title="Goa" d="M140,445 L155,445 L150,465 L138,460 Z" />
+      <path id="KL" title="Kerala" d="M175,515 L205,510 L195,580 L170,570 Z" />
+      <path id="TN" title="Tamil Nadu" d="M205,505 L265,495 L250,585 L190,580 Z" />
+      <path id="AS" title="Assam" d="M425,190 L485,185 L480,225 L420,230 Z" />
+    </g>
+    <g id="capitalDotsGroup">
+      <circle cx="205" cy="55" r="4" class="capDot"/>
+      <circle cx="170" cy="115" r="4" class="capDot"/>
+      <circle cx="120" cy="205" r="4" class="capDot"/>
+      <circle cx="260" cy="180" r="4" class="capDot"/>
+      <circle cx="95" cy="295" r="4" class="capDot"/>
+      <circle cx="220" cy="285" r="4" class="capDot"/>
+      <circle cx="360" cy="210" r="4" class="capDot"/>
+      <circle cx="345" cy="275" r="4" class="capDot"/>
+      <circle cx="400" cy="290" r="4" class="capDot"/>
+      <circle cx="195" cy="375" r="4" class="capDot"/>
+      <circle cx="185" cy="465" r="4" class="capDot"/>
+      <circle cx="225" cy="545" r="4" class="capDot"/>
+      <circle cx="185" cy="550" r="4" class="capDot"/>
+    </g>
+  </svg>`;
+
+  holder.innerHTML = SVG_DATA;
+  const svg = holder.querySelector('svg');
+
+  function clearActive(){ if(activePath){ activePath.classList.remove('active'); activePath = null; } }
+
   function showBanner(name, info){
     nameEl.textContent = name;
-    if(info){ capText.textContent = 'Capital: ' + info.capital; cmText.textContent = 'CM: ' + info.cm; langText.textContent = 'Language: ' + info.language; factsGrid.style.display = 'flex'; }
-    else { factsGrid.style.display = 'none'; }
+    if(info){
+      capText.textContent = 'Capital: ' + info.capital;
+      cmText.textContent = 'CM: ' + info.cm;
+      langText.textContent = 'Language: ' + info.language;
+      factsGrid.style.display = 'flex';
+    } else {
+      factsGrid.style.display = 'none';
+    }
     banner.classList.remove('pop'); void banner.offsetWidth; banner.classList.add('pop');
   }
+
   function onTap(el, name){
     if(mode === 'quizState'){ handleQuizAnswer(el, name); return; }
     clearActive(); el.classList.add('active'); activePath = el;
     const info = INDIA_STATE_INFO[name] || null;
     showBanner(name, info);
-    if(info){ speak(name + '. Capital: ' + info.capital + '. Chief Minister: ' + info.cm + '. Language: ' + info.language + '.'); }
-    else { speak(name); }
-  }
-  function attachHandlers(svg){
-    const paths = svg.querySelectorAll('path[id], path[title]');
-    regionPaths = [];
-    paths.forEach(p=>{
-      const rawId = p.getAttribute('id') || '';
-      const titleAttr = p.getAttribute('title') || (p.querySelector('title') ? p.querySelector('title').textContent : '');
-      let name = idToName(rawId, titleAttr);
-      if(!name) return;
-      p.style.pointerEvents = 'auto';
-      regionPaths.push({el:p, name});
-      const handler = (ev)=>{ ev.preventDefault(); onTap(p, name); };
-      p.addEventListener('click', handler);
-      p.addEventListener('touchstart', handler, {passive:false});
-    });
-  }
-  function plotCapitalDots(svg){
-    let bbox; try{ bbox = svg.getBBox(); }catch(e){ return; }
-    const LAT_MIN = 6.5, LAT_MAX = 37.6, LON_MIN = 68.0, LON_MAX = 97.5;
-    let dotsGroup = svg.querySelector('#capitalDotsGroup');
-    if(!dotsGroup){ dotsGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g'); dotsGroup.setAttribute('id', 'capitalDotsGroup'); svg.appendChild(dotsGroup); }
-    dotsGroup.innerHTML = '';
-    const rVal = Math.max(bbox.width, bbox.height) * 0.006;
-    for(const stateName in INDIA_CAPITALS_GEO){
-      const infoGeo = INDIA_CAPITALS_GEO[stateName];
-      const xFrac = (infoGeo.lon - LON_MIN) / (LON_MAX - LON_MIN);
-      const yFrac = 1 - (infoGeo.lat - LAT_MIN) / (LAT_MAX - LAT_MIN);
-      const cx = bbox.x + xFrac * bbox.width, cy = bbox.y + yFrac * bbox.height;
-      const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-      circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', Math.max(rVal, 2.5)); circle.setAttribute('class', 'capDot');
-      dotsGroup.appendChild(circle);
-    }
-    dotsGroup.style.display = dotsVisible ? '' : 'none';
-  }
-
-  // Reliable offline vector map fallback that always renders immediately
-  const FALLBACK_SVG_INDIA = `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg"><path id="JK" title="Jammu and Kashmir" d="M120,20 L200,10 L210,60 L150,70 Z"/><path id="PB" title="Punjab" d="M120,75 L160,72 L165,100 L125,105 Z"/><path id="RJ" title="Rajasthan" d="M60,110 L150,105 L160,220 L70,220 Z"/><path id="UP" title="Uttar Pradesh" d="M170,105 L280,100 L285,175 L175,180 Z"/><path id="MP" title="Madhya Pradesh" d="M150,190 L280,185 L285,260 L155,265 Z"/><path id="GJ" title="Gujarat" d="M40,225 L140,225 L130,300 L30,290 Z"/><path id="MH" title="Maharashtra" d="M150,270 L270,265 L265,340 L155,345 Z"/><path id="BR" title="Bihar" d="M290,185 L360,182 L362,225 L292,228 Z"/><path id="WB" title="West Bengal" d="M330,230 L380,228 L385,290 L335,295 Z"/><path id="OR" title="Odisha" d="M290,270 L350,268 L345,330 L285,335 Z"/><path id="KA" title="Karnataka" d="M160,350 L230,348 L225,420 L155,425 Z"/><path id="AP" title="Andhra Pradesh" d="M235,345 L300,342 L295,410 L230,415 Z"/><path id="TN" title="Tamil Nadu" d="M180,430 L250,428 L245,480 L175,485 Z"/><path id="KL" title="Kerala" d="M150,430 L175,428 L170,480 L148,482 Z"/></svg>`;
-
-  async function loadMap(){
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2-second timeout protection
-    const sources = ["https://cdn.jsdelivr.net/npm/@svg-maps/india@2/india.svg"];
-    for(const url of sources){
-      try{
-        const res = await fetch(url, {mode:'cors', signal: controller.signal});
-        clearTimeout(timeoutId);
-        if(!res.ok) throw new Error('bad status');
-        const text = await res.text();
-        if(text.includes('<svg')){
-          holder.innerHTML = text;
-          const svg = holder.querySelector('svg');
-          if(!svg) throw new Error('no svg');
-          svg.removeAttribute('width'); svg.removeAttribute('height');
-          if(!svg.getAttribute('viewBox')) svg.setAttribute('viewBox','0 0 1000 1000');
-          svgRoot = svg; attachHandlers(svg); plotCapitalDots(svg);
-          if(regionPaths.length > 0) return;
-        }
-      }catch(e){ /* Fall through immediately */ }
-    }
-    // Fallback renders instantly without network
-    holder.innerHTML = FALLBACK_SVG_INDIA;
-    const svg = holder.querySelector('svg');
-    svgRoot = svg; attachHandlers(svg); plotCapitalDots(svg);
+    if(info) speak(name + '. Capital: ' + info.capital);
+    else speak(name);
   }
 
   function handleQuizAnswer(el, name){
-    const isCorrect = (name === quizTarget.name);
-    if(isCorrect){ el.classList.add('active'); activePath = el; qbar.textContent = "✅ Correct! That's " + name + '!'; speak('Yes! That is ' + name + '!'); confettiBurst(); setTimeout(nextQuizQuestion, 1700); }
-    else { qbar.textContent = "❌ Oops, that's " + name + '. Try again for ' + quizTarget.name + '!'; speak('Not quite. Try finding ' + quizTarget.name + '.'); }
-  }
-  function nextQuizQuestion(){
-    clearActive();
-    const pool = regionPaths.filter(r => INDIA_STATES_ONLY.includes(r.name));
-    if(pool.length === 0) return;
-    quizTarget = pool[Math.floor(Math.random()*pool.length)];
-    qbar.textContent = 'Find: ' + quizTarget.name; speak('Can you find ' + quizTarget.name + '?');
-  }
-  function setMode(newMode){
-    mode = newMode; clearActive();
-    document.getElementById('modeExploreIN').classList.remove('active');
-    document.getElementById('modeQuizStateIN').classList.remove('active');
-    if(newMode === 'explore'){ document.getElementById('modeExploreIN').classList.add('active'); qbar.style.display = 'none'; nameEl.textContent = 'Tap a state to begin!'; factsGrid.style.display = 'none'; }
-    else { document.getElementById('modeQuizStateIN').classList.add('active'); qbar.style.display = 'block'; nextQuizQuestion(); }
-  }
-  document.getElementById('modeExploreIN').addEventListener('click', ()=>setMode('explore'));
-  document.getElementById('modeQuizStateIN').addEventListener('click', ()=>setMode('quizState'));
-  document.getElementById('resetBtnIN').addEventListener('click', ()=>setMode('explore'));
-  document.getElementById('speakBtnIN').addEventListener('click', ()=>{
-    const t = nameEl.textContent;
-    if(t && t !== 'Tap a state to begin!'){ const info = INDIA_STATE_INFO[t]; if(info) speak(t + '. Capital: ' + info.capital + '. Chief Minister: ' + info.cm + '. Language: ' + info.language + '.'); else speak(t); }
-  });
-  document.getElementById('dotsBtnIN').addEventListener('click', (ev)=>{
-    dotsVisible = !dotsVisible;
-    const g = svgRoot ? svgRoot.querySelector('#capitalDotsGroup') : null;
-    if(g) g.style.display = dotsVisible ? '' : 'none';
-    ev.target.textContent = dotsVisible ? '🟡 Hide Capital Dots' : '🟡 Show Capital Dots';
-  });
-
-  loadMap();
-}
-
-/* ===================== WORLD MODULE ===================== */
-function buildWorldModule(){
-  let activeSel = null, mode = 'explore', quizTarget = null, regionData = [];
-  const holder = document.getElementById('mapHolderWO');
-  const nameEl = document.getElementById('nameTextWO');
-  const flagEl = document.getElementById('flagWO');
-  const flagImgEl = document.getElementById('flagImgWO');
-  const capRow = document.getElementById('capRowWO');
-  const capText = document.getElementById('capTextWO');
-  const banner = document.getElementById('bannerWO');
-  const qbar = document.getElementById('quizBarWO');
-
-  function resolveName(neName){ if(WORLD_NAME_LOOKUP[neName]) return neName; if(NE_NAME_ALIASES[neName]) return NE_NAME_ALIASES[neName]; return null; }
-  function clearActive(){ if(activeSel){ activeSel.classList.remove('active'); activeSel=null; } }
-  function showBanner(name, capital, code){
-    nameEl.textContent = name;
-    if(code){ flagImgEl.src = flagImgUrl(code); flagImgEl.style.display = 'inline-block'; flagEl.style.display = 'none'; }
-    if(capital){ capText.textContent = 'Capital: ' + capital; capRow.style.display = 'flex'; } else { capRow.style.display = 'none'; }
-    banner.classList.remove('pop'); void banner.offsetWidth; banner.classList.add('pop');
-  }
-  function onTap(el, name, capital, code){
-    if(mode === 'quizState' || mode === 'quizCapital'){ handleQuizAnswer(el, name, capital); return; }
-    clearActive(); el.classList.add('active'); activeSel = el;
-    showBanner(name, capital, code);
-    speak(capital ? (name + '. Its capital is ' + capital + '.') : name);
-  }
-  function handleQuizAnswer(el, name, capital){
-    const isCorrect = (name === quizTarget.name);
-    if(isCorrect){
-      el.classList.add('active'); activeSel = el;
-      if(mode === 'quizCapital'){ qbar.textContent = '✅ Correct! ' + quizTarget.capital + ' is the capital of ' + name + '!'; speak('Yes! ' + quizTarget.capital + ' is the capital of ' + name + '!'); }
-      else { qbar.textContent = "✅ Correct! That's " + name + '!'; speak('Yes! That is ' + name + '!'); }
-      confettiBurst(); setTimeout(nextQuizQuestion, 1700);
-    } else {
-      if(mode === 'quizCapital'){ qbar.textContent = "❌ That's " + name + '. Try again — find the one whose capital is ' + quizTarget.capital + '!'; speak('Not quite. Find the one whose capital is ' + quizTarget.capital + '.'); }
-      else { qbar.textContent = "❌ Oops, that's " + name + '. Try again for ' + quizTarget.name + '!'; speak('Not quite. Try finding ' + quizTarget.name + '.'); }
-    }
-  }
-  function nextQuizQuestion(){
-    clearActive();
-    let pool = regionData;
-    if(mode === 'quizCapital') pool = pool.filter(r=>r.capital);
-    if(pool.length === 0) return;
-    quizTarget = pool[Math.floor(Math.random()*pool.length)];
-    if(mode === 'quizCapital'){ qbar.textContent = 'Find the country whose capital is: ' + quizTarget.capital; speak('Which country has ' + quizTarget.capital + ' as its capital?'); }
-    else { qbar.textContent = 'Find: ' + quizTarget.name; speak('Can you find ' + quizTarget.name + '?'); }
-  }
-  function setMode(newMode){
-    mode = newMode; clearActive();
-    document.getElementById('modeExploreWO').classList.remove('active');
-    document.getElementById('modeQuizStateWO').classList.remove('active');
-    document.getElementById('modeQuizCapitalWO').classList.remove('active');
-    if(newMode === 'explore'){ document.getElementById('modeExploreWO').classList.add('active'); qbar.style.display = 'none'; nameEl.textContent = 'Tap a country to begin!'; flagEl.textContent = '👉'; flagEl.style.display = 'inline-block'; flagImgEl.style.display = 'none'; capRow.style.display = 'none'; }
-    else if(newMode === 'quizState'){ document.getElementById('modeQuizStateWO').classList.add('active'); qbar.style.display = 'block'; nextQuizQuestion(); }
-    else if(newMode === 'quizCapital'){ document.getElementById('modeQuizCapitalWO').classList.add('active'); qbar.style.display = 'block'; nextQuizQuestion(); }
-  }
-  document.getElementById('modeExploreWO').addEventListener('click', ()=>setMode('explore'));
-  document.getElementById('modeQuizStateWO').addEventListener('click', ()=>setMode('quizState'));
-  document.getElementById('modeQuizCapitalWO').addEventListener('click', ()=>setMode('quizCapital'));
-  document.getElementById('resetBtnWO').addEventListener('click', ()=>setMode('explore'));
-  document.getElementById('speakBtnWO').addEventListener('click', ()=>{
-    const t = nameEl.textContent;
-    const capVisible = capRow.style.display !== 'none';
-    if(t && t !== 'Tap a country to begin!'){ if(capVisible){ const capTxt = capText.textContent.replace('Capital: ',''); speak(t + '. Its capital is ' + capTxt + '.'); } else { speak(t); } }
-  });
-  async function init(){
-    try{
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2000);
-      const topoRes = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json", { signal: controller.signal });
-      clearTimeout(timeoutId);
-      if(!topoRes.ok) throw new Error('topo fetch failed');
-      const worldTopo = await topoRes.json();
-      const geo = topojson.feature(worldTopo, worldTopo.objects.countries);
-      holder.innerHTML = '';
-      const width = 1000, height = 620;
-      const svgSel = d3.select(holder).append('svg').attr('viewBox', '0 0 ' + width + ' ' + height).attr('preserveAspectRatio', 'xMidYMid meet');
-      const projection = d3.geoNaturalEarth1().fitSize([width, height], geo);
-      const pathGen = d3.geoPath().projection(projection);
-      regionData = [];
-      svgSel.selectAll('path').data(geo.features).join('path').attr('d', pathGen).attr('data-name', d => d.properties.name)
-        .each(function(d){
-          const neName = d.properties.name;
-          const canonicalName = resolveName(neName);
-          let code = null, capital = null, displayName = neName;
-          if(canonicalName && WORLD_NAME_LOOKUP[canonicalName]){ const pair = WORLD_NAME_LOOKUP[canonicalName]; code = pair[0]; capital = pair[1]; displayName = canonicalName; }
-          regionData.push({ name: displayName, code, capital, element: this });
-          this.style.pointerEvents = 'auto';
-          const handler = (ev)=>{ ev.preventDefault(); onTap(this, displayName, capital, code); };
-          this.addEventListener('click', handler);
-          this.addEventListener('touchstart', handler, {passive:false});
-        });
-    }catch(e){
-      holder.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#555;"><h3>🌍 World Map (Offline Mode)</h3><p>Please connect to the internet to load full world topology.</p></div>';
-    }
-  }
-  init();
-}
-
-/* ===================== SINGLE-PLAYER QUIZ MODULE ===================== */
-function buildQuizModule(){
-  const TOPIC_LABELS = { mythology: "Mythology", sports: "Sports", animals: "Animals", history: "History", maths: "Maths", english: "English", science: "Science" };
-  let currentTopic = null, queue = [], qIndex = 0, score = 0, answered = false, roundLength = 10;
-  let timerInterval = null, advanceTimeout = null;
-
-  const picker = document.getElementById('quizTopicPicker');
-  const wrap = document.getElementById('quizWrap');
-  const progress = document.getElementById('quizProgress');
-  const emojiEl = document.getElementById('quizEmoji');
-  const questionText = document.getElementById('quizQuestionText');
-  const optionsEl = document.getElementById('quizOptions');
-  const feedbackEl = document.getElementById('quizFeedback');
-  const timerInfoEl = document.getElementById('quizTimerInfo');
-  const resultScreen = document.getElementById('quizResultScreen');
-  const finalScore = document.getElementById('quizFinalScore');
-  const finalMessage = document.getElementById('quizFinalMessage');
-
-  function clearTimers(){
-    if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
-    if(advanceTimeout){ clearTimeout(advanceTimeout); advanceTimeout = null; }
-    timerInfoEl.style.display = 'none';
-  }
-
-  window.singleQuizReset = function(){
-    clearTimers();
-    wrap.style.display = 'none';
-    resultScreen.style.display = 'none';
-    picker.style.display = 'flex';
-  };
-
-  function startTopic(topic){
-    if(topic === 'clock'){
-      // Switch directly to embedded clock quiz
-      document.getElementById('quizSingleContainer').style.display = 'none';
-      document.getElementById('quizClockContainer').style.display = 'flex';
-      window.startClockQuiz();
-      return;
-    }
-    currentTopic = topic; score = 0; qIndex = 0;
-    queue = shuffleArray(QUIZ_DATA[topic]).slice(0, roundLength);
-    picker.style.display = 'none';
-    wrap.style.display = 'flex';
-    resultScreen.style.display = 'none';
-    showQuestion();
-  }
-
-  function showQuestion(){
-    clearTimers();
-    answered = false;
-    const q = queue[qIndex];
-    progress.textContent = TOPIC_LABELS[currentTopic] + ' — Question ' + (qIndex+1) + ' of ' + queue.length + ' (Score: ' + score + ')';
-    emojiEl.textContent = q.emoji || '❓';
-    questionText.textContent = q.q;
-    feedbackEl.textContent = '';
-    optionsEl.innerHTML = '';
-    const letters = ['A','B','C','D'];
-    const correctText = q.options[q.answer];
-    const shuffledOpts = shuffleArray(q.options);
-    shuffledOpts.forEach((opt, idx)=>{
-      const btn = document.createElement('button');
-      btn.className = 'ctrl quizOptBtn';
-      btn.style.background = '#4c6ef5';
-      btn.textContent = letters[idx] + '. ' + opt;
-      btn.addEventListener('click', ()=> onAnswer(opt === correctText, opt, correctText, btn));
-      optionsEl.appendChild(btn);
-    });
-    speak(q.q);
-  }
-
-  function onAnswer(isCorrect, chosenText, correctText, btnEl){
-    if(answered) return;
-    answered = true;
-    const allButtons = optionsEl.querySelectorAll('button');
-    allButtons.forEach(b => b.disabled = true);
-
-    if(isCorrect){
-      score++;
-      btnEl.style.background = '#2a9d8f';
-      feedbackEl.textContent = '✅ Correct! Well done!';
-      feedbackEl.style.color = '#2a9d8f';
-      speak('Correct! Well done!');
+    if(name === quizTarget.name){
+      el.classList.add('active'); activePath = el;
+      qbar.textContent = "✅ Correct! That's " + name + "!";
+      speak("Yes! That is " + name + "!");
       confettiBurst();
-
-      advanceTimeout = setTimeout(()=>{
-        qIndex++;
-        if(qIndex < queue.length){ showQuestion(); } else { showResult(); }
-      }, 1600);
+      setTimeout(nextQuizQuestion, 1600);
     } else {
-      btnEl.style.background = '#c0392b';
-      allButtons.forEach(b => { if(b.textContent.slice(3) === correctText) b.style.background = '#2a9d8f'; });
-      feedbackEl.textContent = '❌ Oops! The correct answer is: ' + correctText;
-      feedbackEl.style.color = '#c0392b';
-      speak('Not quite. The correct answer is ' + correctText + '.');
-
-      // 10-second review countdown
-      let secondsLeft = 10;
-      timerInfoEl.style.display = 'inline-block';
-      timerInfoEl.textContent = '⏳ Next question in ' + secondsLeft + 's…';
-
-      timerInterval = setInterval(()=>{
-        secondsLeft--;
-        if(secondsLeft > 0){
-          timerInfoEl.textContent = '⏳ Next question in ' + secondsLeft + 's…';
-        } else {
-          clearTimers();
-        }
-      }, 1000);
-
-      advanceTimeout = setTimeout(()=>{
-        clearTimers();
-        qIndex++;
-        if(qIndex < queue.length){ showQuestion(); } else { showResult(); }
-      }, 10000);
+      qbar.textContent = "❌ Oops, that's " + name + ". Try again for " + quizTarget.name + "!";
+      speak("Not quite. Try finding " + quizTarget.name);
     }
   }
 
-  function showResult(){
-    clearTimers();
-    wrap.style.display = 'none';
-    resultScreen.style.display = 'flex';
-    const total = queue.length;
-    finalScore.textContent = 'You scored ' + score + ' out of ' + total + '!';
-    let msg = '';
-    if(score === total) msg = "Amazing! You're a superstar! 🌟";
-    else if(score >= total*0.7) msg = "Great job! You know a lot! 🎉";
-    else if(score >= total*0.4) msg = "Good try! Keep learning! 💪";
-    else msg = "Nice try! Let's learn more and try again! 😊";
-    finalMessage.textContent = msg;
-    speak('You scored ' + score + ' out of ' + total + '. ' + msg);
-    if(score >= total*0.7) confettiBurst();
+  function nextQuizQuestion(){
+    clearActive();
+    if(regionPaths.length === 0) return;
+    quizTarget = regionPaths[Math.floor(Math.random()*regionPaths.length)];
+    qbar.textContent = 'Find: ' + quizTarget.name;
+    speak('Can you find ' + quizTarget.name + '?');
   }
 
-  document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(btn=>{
-    btn.addEventListener('click', ()=> startTopic(btn.getAttribute('data-topic')));
+  regionPaths = [];
+  svg.querySelectorAll('path').forEach(p => {
+    const id = p.getAttribute('id');
+    const name = STATE_NAMES[id] || p.getAttribute('title');
+    if(!name) return;
+    regionPaths.push({ el: p, name });
+    const fn = (e) => { e.preventDefault(); onTap(p, name); };
+    p.addEventListener('click', fn);
+    p.addEventListener('touchstart', fn, {passive: false});
   });
-  document.getElementById('quizPlayAgainBtn').addEventListener('click', ()=>{
-    resultScreen.style.display = 'none';
-    picker.style.display = 'flex';
+
+  function setMode(newMode){
+    mode = newMode; clearActive();
+    document.getElementById('modeExploreIN').classList.toggle('active', mode === 'explore');
+    document.getElementById('modeQuizStateIN').classList.toggle('active', mode === 'quizState');
+    if(mode === 'explore'){
+      qbar.style.display = 'none';
+      nameEl.textContent = 'Tap a state to begin!';
+      factsGrid.style.display = 'none';
+    } else {
+      qbar.style.display = 'block';
+      nextQuizQuestion();
+    }
+  }
+
+  document.getElementById('modeExploreIN').addEventListener('click', () => setMode('explore'));
+  document.getElementById('modeQuizStateIN').addEventListener('click', () => setMode('quizState'));
+  document.getElementById('resetBtnIN').addEventListener('click', () => setMode('explore'));
+  document.getElementById('speakBtnIN').addEventListener('click', () => {
+    const t = nameEl.textContent;
+    if(t && t !== 'Tap a state to begin!') speak(t);
+  });
+  document.getElementById('dotsBtnIN').addEventListener('click', (e) => {
+    dotsVisible = !dotsVisible;
+    const g = svg.querySelector('#capitalDotsGroup');
+    if(g) g.style.display = dotsVisible ? '' : 'none';
+    e.target.textContent = dotsVisible ? '🟡 Hide Capital Dots' : '🟡 Show Capital Dots';
   });
 }
 
@@ -522,8 +352,6 @@ function buildClockModule(){
 
     for(let i = 1; i <= 12; i++){
       const angle = (i * 30) * (Math.PI / 180);
-      
-      // Dial Tick
       const x1 = cx + 120 * Math.sin(angle), y1 = cy - 120 * Math.cos(angle);
       const x2 = cx + 110 * Math.sin(angle), y2 = cy - 110 * Math.cos(angle);
       const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
@@ -532,7 +360,6 @@ function buildClockModule(){
       tick.setAttribute('class', 'clock-tick');
       ticksGroup.appendChild(tick);
 
-      // Inner hour numbers (1 - 12)
       const hx = cx + 92 * Math.sin(angle), hy = cy - 92 * Math.cos(angle);
       const hText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       hText.setAttribute('x', hx); hText.setAttribute('y', hy);
@@ -540,7 +367,6 @@ function buildClockModule(){
       hText.textContent = i;
       hoursGroup.appendChild(hText);
 
-      // Outer minutes helper numbers (5, 10, 15... 55, 00)
       const mx = cx + 134 * Math.sin(angle), my = cy - 134 * Math.cos(angle);
       const mText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       mText.setAttribute('x', mx); mText.setAttribute('y', my);
@@ -555,15 +381,12 @@ function buildClockModule(){
     const minuteAngle = minute * 6;
     const hourAngle = ((hour % 12) * 30) + (minute * 0.5);
 
-    const hLen = 55;
-    const mLen = 85;
-
+    const hLen = 55, mLen = 85;
     const hRad = (hourAngle - 90) * (Math.PI / 180);
     const mRad = (minuteAngle - 90) * (Math.PI / 180);
 
     hourHand.setAttribute('x2', cx + hLen * Math.cos(hRad));
     hourHand.setAttribute('y2', cy + hLen * Math.sin(hRad));
-
     minuteHand.setAttribute('x2', cx + mLen * Math.cos(mRad));
     minuteHand.setAttribute('y2', cy + mLen * Math.sin(mRad));
   }
@@ -624,7 +447,7 @@ function buildClockModule(){
       btn.style.background = '#4c6ef5';
       btn.style.width = '100%';
       btn.textContent = `${letters[idx]}. ${opt}`;
-      btn.addEventListener('click', ()=> onAnswer(opt === currentTarget.correctText, opt, btn));
+      btn.addEventListener('click', () => onAnswer(opt === currentTarget.correctText, opt, btn));
       optionsEl.appendChild(btn);
     });
 
@@ -639,7 +462,270 @@ function buildClockModule(){
 
     if(isCorrect){
       score++;
-      btnEl.style.bac	kground = '#2a9d8f';
+      btnEl.style.background = '#2a9d8f';
       feedbackEl.textContent = '✅ Correct! Brilliant time-telling!';
       feedbackEl.style.color = '#2a9d8f';
-      speak(
+      speak(`Yes! The time is ${currentTarget.correctText}!`);
+      confettiBurst();
+
+      advanceTimeout = setTimeout(()=>{
+        qIndex++;
+        if(qIndex < roundLength) showQuestion();
+        else showResult();
+      }, 1600);
+    } else {
+      btnEl.style.background = '#c0392b';
+      allButtons.forEach(b => {
+        if(b.textContent.slice(3) === currentTarget.correctText) b.style.background = '#2a9d8f';
+      });
+      feedbackEl.textContent = `❌ Oops! The correct time is ${currentTarget.correctText}`;
+      feedbackEl.style.color = '#c0392b';
+      speak(`Not quite. The clock shows ${currentTarget.correctText}.`);
+
+      let secondsLeft = 10;
+      timerInfoEl.style.display = 'inline-block';
+      timerInfoEl.textContent = `⏳ Next clock in ${secondsLeft}s…`;
+
+      timerInterval = setInterval(()=>{
+        secondsLeft--;
+        if(secondsLeft > 0){
+          timerInfoEl.textContent = `⏳ Next clock in ${secondsLeft}s…`;
+        } else {
+          clearTimers();
+        }
+      }, 1000);
+
+      advanceTimeout = setTimeout(()=>{
+        clearTimers();
+        qIndex++;
+        if(qIndex < roundLength) showQuestion();
+        else showResult();
+      }, 10000);
+    }
+  }
+
+  function showResult(){
+    clearTimers();
+    cardBody.style.display = 'none';
+    resultScreen.style.display = 'flex';
+    finalScoreEl.textContent = `You scored ${score} out of ${roundLength}!`;
+    let msg = score >= 8 ? "You're a master of time! ⏰🌟" : (score >= 5 ? "Good job! Keep practicing the clock! 👏" : "Keep practicing! You will master telling time soon! 😊");
+    finalMsgEl.textContent = msg;
+    speak(`You scored ${score} out of ${roundLength}. ${msg}`);
+    if(score >= 7) confettiBurst();
+  }
+
+  document.getElementById('clockPlayAgainBtn').addEventListener('click', () => {
+    window.clockQuizReset();
+    showQuestion();
+  });
+
+  drawClockFace();
+}
+
+/* ===================== ARCADE (2-PLAYER) MODULE ===================== */
+function buildArcadeModule(){
+  const TOPIC_LABELS = { mythology: "Mythology", sports: "Sports", animals: "Animals", history: "History", maths: "Maths", english: "English", science: "Science" };
+  let currentTopic = null, queue = [], qIndex = 0, scoreP1 = 0, scoreP2 = 0, roundLength = 10;
+  let answeredP1 = false, answeredP2 = false, p1Correct = false, p2Correct = false;
+  let timerInterval = null, advanceTimeout = null;
+
+  const picker = document.getElementById('arcadeTopicPicker');
+  const wrap = document.getElementById('arcadeWrap');
+  const resultWrap = document.getElementById('arcadeResultWrap');
+  const progress = document.getElementById('arcadeProgress');
+  const emojiEl = document.getElementById('arcadeEmoji');
+  const questionText = document.getElementById('arcadeQuestionText');
+  const timerInfoEl = document.getElementById('arcadeTimerInfo');
+  const optsP1 = document.getElementById('arcadeOptionsP1');
+  const optsP2 = document.getElementById('arcadeOptionsP2');
+  const fbP1 = document.getElementById('arcadeFeedbackP1');
+  const fbP2 = document.getElementById('arcadeFeedbackP2');
+  const scoreP1El = document.getElementById('arcadeScoreP1');
+  const scoreP2El = document.getElementById('arcadeScoreP2');
+  const finalWinner = document.getElementById('arcadeFinalWinner');
+  const finalScores = document.getElementById('arcadeFinalScores');
+
+  function clearTimers(){
+    if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
+    if(advanceTimeout){ clearTimeout(advanceTimeout); advanceTimeout = null; }
+    timerInfoEl.style.display = 'none';
+  }
+
+  window.arcadeQuizReset = function(){
+    clearTimers();
+    wrap.style.display = 'none';
+    resultWrap.style.display = 'none';
+    picker.style.display = 'flex';
+  };
+
+  function startTopic(topic){
+    currentTopic = topic; scoreP1 = 0; scoreP2 = 0; qIndex = 0;
+    queue = shuffleArray(QUIZ_DATA[topic]).slice(0, roundLength);
+    picker.style.display = 'none';
+    wrap.style.display = 'flex';
+    resultWrap.style.display = 'none';
+    updateScores();
+    showQuestion();
+  }
+
+  function updateScores(){
+    scoreP1El.textContent = '🔵 P1: ' + scoreP1;
+    scoreP2El.textContent = '🔴 P2: ' + scoreP2;
+  }
+
+  function renderOptionsFor(container, correctText, options, feedbackEl, onPick){
+    container.innerHTML = '';
+    const letters = ['A','B','C','D'];
+    const shuffled = shuffleArray(options);
+    shuffled.forEach((opt, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = 'ctrl arcadeOptBtn';
+      btn.style.background = '#4c6ef5';
+      btn.textContent = letters[idx] + '. ' + opt;
+      btn.addEventListener('click', () => onPick(opt === correctText, opt, btn, container, feedbackEl));
+      container.appendChild(btn);
+    });
+  }
+
+  function showQuestion(){
+    clearTimers();
+    answeredP1 = false; answeredP2 = false; p1Correct = false; p2Correct = false;
+    const q = queue[qIndex];
+    progress.textContent = TOPIC_LABELS[currentTopic] + ' — Question ' + (qIndex+1) + ' of ' + queue.length;
+    emojiEl.textContent = q.emoji || '❓';
+    questionText.textContent = q.q;
+    fbP1.textContent = ''; fbP2.textContent = '';
+    const correctText = q.options[q.answer];
+
+    renderOptionsFor(optsP1, correctText, q.options, fbP1, (isCorrect, chosen, btn, container)=>{
+      if(answeredP1) return; answeredP1 = true; p1Correct = isCorrect;
+      Array.from(container.children).forEach(b => b.disabled = true);
+      if(isCorrect){ scoreP1++; btn.style.background = '#2a9d8f'; fbP1.textContent = '✅ Correct!'; fbP1.style.color = '#2a9d8f'; confettiBurst(); }
+      else { btn.style.background = '#c0392b'; Array.from(container.children).forEach(b=>{ if(b.textContent.slice(3) === correctText) b.style.background = '#2a9d8f'; }); fbP1.textContent = '❌ Correct: ' + correctText; fbP1.style.color = '#c0392b'; }
+      updateScores();
+      checkBothAnswered();
+    });
+    renderOptionsFor(optsP2, correctText, q.options, fbP2, (isCorrect, chosen, btn, container)=>{
+      if(answeredP2) return; answeredP2 = true; p2Correct = isCorrect;
+      Array.from(container.children).forEach(b => b.disabled = true);
+      if(isCorrect){ scoreP2++; btn.style.background = '#2a9d8f'; fbP2.textContent = '✅ Correct!'; fbP2.style.color = '#2a9d8f'; confettiBurst(); }
+      else { btn.style.background = '#c0392b'; Array.from(container.children).forEach(b=>{ if(b.textContent.slice(3) === correctText) b.style.background = '#2a9d8f'; }); fbP2.textContent = '❌ Correct: ' + correctText; fbP2.style.color = '#c0392b'; }
+      updateScores();
+      checkBothAnswered();
+    });
+
+    speak(q.q);
+  }
+
+  function checkBothAnswered(){
+    if(answeredP1 && answeredP2){
+      const anyWrong = (!p1Correct || !p2Correct);
+      if(anyWrong){
+        let secondsLeft = 10;
+        timerInfoEl.style.display = 'inline-block';
+        timerInfoEl.textContent = '⏳ Reviewing answer… next in ' + secondsLeft + 's';
+
+        timerInterval = setInterval(()=>{
+          secondsLeft--;
+          if(secondsLeft > 0){
+            timerInfoEl.textContent = '⏳ Reviewing answer… next in ' + secondsLeft + 's';
+          } else {
+            clearTimers();
+          }
+        }, 1000);
+
+        advanceTimeout = setTimeout(()=>{
+          clearTimers();
+          qIndex++;
+          if(qIndex < queue.length){ showQuestion(); } else { showResult(); }
+        }, 10000);
+      } else {
+        advanceTimeout = setTimeout(()=>{
+          qIndex++;
+          if(qIndex < queue.length){ showQuestion(); } else { showResult(); }
+        }, 1600);
+      }
+    }
+  }
+
+  function showResult(){
+    clearTimers();
+    wrap.style.display = 'none';
+    resultWrap.style.display = 'flex';
+    if(scoreP1 > scoreP2){ finalWinner.textContent = '🏆 Player 1 Wins! 🔵'; speak('Player 1 wins!'); }
+    else if(scoreP2 > scoreP1){ finalWinner.textContent = '🏆 Player 2 Wins! 🔴'; speak('Player 2 wins!'); }
+    else { finalWinner.textContent = "🤝 It's a Tie!"; speak("It's a tie!"); }
+    finalScores.textContent = 'Player 1: ' + scoreP1 + '  |  Player 2: ' + scoreP2 + '  (out of ' + queue.length + ')';
+    confettiBurst();
+  }
+
+  document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(btn=>{
+    btn.addEventListener('click', () => startTopic(btn.getAttribute('data-topic')));
+  });
+  document.getElementById('arcadePlayAgainBtn').addEventListener('click', () => {
+    resultWrap.style.display = 'none';
+    picker.style.display = 'flex';
+  });
+}
+
+/* ===================== QUIZ MODE SWITCH ===================== */
+function setupQuizModeSwitch(){
+  const mainPicker = document.getElementById('quizMainModePicker');
+  const singleContainer = document.getElementById('quizSingleContainer');
+  const arcadeContainer = document.getElementById('arcadeContainer');
+  const clockContainer = document.getElementById('quizClockContainer');
+  const headerSub = document.getElementById('quizHeaderSub');
+
+  document.getElementById('pickSingleMode').addEventListener('click', () => {
+    mainPicker.style.display = 'none';
+    singleContainer.style.display = 'flex';
+    arcadeContainer.style.display = 'none';
+    clockContainer.style.display = 'none';
+    headerSub.textContent = 'Pick a topic and answer 10 fun questions!';
+  });
+  document.getElementById('pickClockMode').addEventListener('click', () => {
+    mainPicker.style.display = 'none';
+    singleContainer.style.display = 'none';
+    arcadeContainer.style.display = 'none';
+    clockContainer.style.display = 'flex';
+    headerSub.textContent = 'Look at the hands of the clock and tell the time!';
+    window.startClockQuiz();
+  });
+  document.getElementById('pickArcadeMode').addEventListener('click', () => {
+    mainPicker.style.display = 'none';
+    arcadeContainer.style.display = 'flex';
+    singleContainer.style.display = 'none';
+    clockContainer.style.display = 'none';
+    headerSub.textContent = 'Two players, one question each round — good luck!';
+  });
+}
+
+/* ===================== PAGE NAVIGATION ===================== */
+function showPage(pageKey){
+  const pages = { india: 'pageIndiaEl', world: 'pageWorldEl', quiz: 'pageQuizEl' };
+  const navs = { india: 'navIndia', world: 'navWorld', quiz: 'navQuiz' };
+  const bodyClasses = { india: 'page-india', world: 'page-world', quiz: 'page-quiz' };
+
+  Object.keys(pages).forEach(key => {
+    const el = document.getElementById(pages[key]);
+    const btn = document.getElementById(navs[key]);
+    if(el) el.classList.toggle('visible', key === pageKey);
+    if(btn) btn.classList.toggle('active', key === pageKey);
+    document.body.classList.toggle(bodyClasses[key], key === pageKey);
+  });
+}
+
+// Global button setup
+document.getElementById('navIndia').addEventListener('click', () => showPage('india'));
+document.getElementById('navWorld').addEventListener('click', () => showPage('world'));
+document.getElementById('navQuiz').addEventListener('click', () => showPage('quiz'));
+document.getElementById('globalHomeBtn').addEventListener('click', quitToQuizHome);
+
+/* ===================== RUN ===================== */
+buildIndiaModule();
+buildWorldModule();
+buildQuizModule();
+buildArcadeModule();
+buildClockModule();
+setupQuizModeSwitch();
