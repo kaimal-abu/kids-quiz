@@ -559,6 +559,7 @@ function extractTimeFromText(text){
 }
 
 /* ===================== QUIZ MODULE (Single & 2-Player Arcade) ===================== */
+/* ===================== QUIZ MODULE (Single & 2-Player with Skip) ===================== */
 function buildQuizModule(){
   setupClockSVG('clockSvg', 'clockTicks', 'clockOuterMinutes', 'clockHourNumbers');
   setupClockSVG('arcadeClockSvg', 'arcadeClockTicks', 'arcadeClockOuterMinutes', 'arcadeClockHourNumbers');
@@ -566,14 +567,9 @@ function buildQuizModule(){
   let currentTopic = '';
   let singleQuestions = [];
   let singleIndex = 0;
-  let singleScore = 0;
 
   let arcadeQuestions = [];
   let arcadeIndex = 0;
-  let scoreP1 = 0;
-  let scoreP2 = 0;
-  let answeredP1 = false;
-  let answeredP2 = false;
 
   const mainPicker = document.getElementById('quizMainModePicker');
   const singleContainer = document.getElementById('quizSingleContainer');
@@ -589,7 +585,7 @@ function buildQuizModule(){
   const arcadeResultWrap = document.getElementById('arcadeResultWrap');
   const arcadeClockVisualWrap = document.getElementById('arcadeClockVisualWrap');
 
-  // Mode Selection
+  // Mode Selection Triggers
   document.getElementById('pickSingleMode')?.addEventListener('click', () => {
     mainPicker.style.display = 'none';
     singleContainer.style.display = 'flex';
@@ -600,7 +596,7 @@ function buildQuizModule(){
     arcadeContainer.style.display = 'flex';
   });
 
-  // Single Player Topic Picker
+  /* ------------------- SINGLE PLAYER ------------------- */
   document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
@@ -610,17 +606,16 @@ function buildQuizModule(){
     });
   });
 
-function startSingleQuiz(topic){
+  function startSingleQuiz(topic){
     const pool = QUIZ_DATA[topic] || [];
     if(!pool.length){
       alert('No questions found for this topic!');
       return;
     }
 
-    // 1. Pick 10 random questions and reset any previous user selections
     singleQuestions = shuffleArray(pool).slice(0, 10).map(q => ({
       ...q,
-      userAnswer: null // Tracks the user's chosen option
+      userAnswer: null
     }));
 
     singleIndex = 0;
@@ -632,10 +627,12 @@ function startSingleQuiz(topic){
 
   function renderSingleQuestion(){
     const q = singleQuestions[singleIndex];
+    const isLastQuestion = singleIndex === singleQuestions.length - 1;
+
     document.getElementById('quizProgress').textContent = `Question ${singleIndex + 1} of ${singleQuestions.length}`;
     document.getElementById('quizQuestionText').textContent = q.q;
 
-    // Time topic clock handling
+    // Clock display
     const timeData = extractTimeFromText(q.correctText + ' ' + q.q);
     if(currentTopic === 'time' && timeData){
       clockVisualWrap.style.display = 'flex';
@@ -659,49 +656,43 @@ function startSingleQuiz(topic){
       const isThisSelected = q.userAnswer === opt;
       const isCorrect = String(opt).trim().toLowerCase() === String(q.correctText).trim().toLowerCase();
 
-      // If previously answered, lock options and restore feedback state
-      if (isAlreadyAnswered) {
-        btn.disabled = true; // Prevents changing the answer
-
-        if (isThisSelected) {
-          if (isCorrect) {
-            btn.classList.add('correct');
-          } else {
-            btn.classList.add('wrong');
-          }
-        } else if (isCorrect) {
-          // Highlight correct answer if they were wrong
+      if(isAlreadyAnswered){
+        btn.disabled = true; // Lock option if already answered
+        if(isThisSelected){
+          btn.classList.add(isCorrect ? 'correct' : 'wrong');
+        } else if(isCorrect){
           btn.classList.add('correct');
         }
       } else {
+        // If question was skipped, options remain clickable
         btn.addEventListener('click', () => handleSingleAnswer(opt, q.correctText, btn));
       }
 
       optsContainer.appendChild(btn);
     });
 
-    // Restore feedback text if returning to an answered question
-    if (isAlreadyAnswered) {
+    if(isAlreadyAnswered){
       const isCorrect = String(q.userAnswer).trim().toLowerCase() === String(q.correctText).trim().toLowerCase();
-      if (isCorrect) {
-        fb.textContent = '🎉 Correct!';
-        fb.style.color = '#27ae60';
-      } else {
-        fb.textContent = `❌ Oops! The correct answer is: ${q.correctText}`;
-        fb.style.color = '#e74c3c';
-      }
+      fb.textContent = isCorrect ? '🎉 Correct!' : `❌ Oops! The correct answer is: ${q.correctText}`;
+      fb.style.color = isCorrect ? '#27ae60' : '#e74c3c';
     }
 
-    // Previous is disabled only on question 1
-    document.getElementById('quizPrevBtn').disabled = singleIndex === 0;
+    // Navigation buttons:
+    const prevBtn = document.getElementById('quizPrevBtn');
+    const nextBtn = document.getElementById('quizNextBtn');
 
-    // Next is enabled if already answered, disabled if pending an answer
-    document.getElementById('quizNextBtn').disabled = !isAlreadyAnswered;
+    if(prevBtn) prevBtn.disabled = singleIndex === 0;
+
+    // Next button is ALWAYS enabled (allowing Skip)
+    if(nextBtn){
+      nextBtn.disabled = false;
+      nextBtn.textContent = isLastQuestion ? 'Submit 🏁' : (isAlreadyAnswered ? 'Next ➡️' : 'Skip / Next ➡️');
+    }
   }
 
   function handleSingleAnswer(selected, correct, selectedBtn){
     const q = singleQuestions[singleIndex];
-    q.userAnswer = selected; // Lock the user's answer into the question object
+    q.userAnswer = selected;
 
     const fb = document.getElementById('quizFeedback');
     document.querySelectorAll('#quizOptions .quizOptBtn').forEach(b => b.disabled = true);
@@ -715,7 +706,6 @@ function startSingleQuiz(topic){
       confettiBurst();
     } else {
       selectedBtn.classList.add('wrong');
-      // Highlight the correct answer button
       document.querySelectorAll('#quizOptions .quizOptBtn').forEach(b => {
         if(b.textContent.trim().toLowerCase() === String(correct).trim().toLowerCase()){
           b.classList.add('correct');
@@ -725,14 +715,23 @@ function startSingleQuiz(topic){
       fb.style.color = '#e74c3c';
     }
 
-    document.getElementById('quizNextBtn').disabled = false;
+    // If 10th question is answered, submit automatically after a brief moment
+    if(singleIndex === singleQuestions.length - 1){
+      setTimeout(() => {
+        showSingleResults();
+      }, 1200);
+    } else {
+      const nextBtn = document.getElementById('quizNextBtn');
+      if(nextBtn) nextBtn.textContent = 'Next ➡️';
+    }
   }
 
   document.getElementById('quizNextBtn')?.addEventListener('click', () => {
-    singleIndex++;
-    if(singleIndex < singleQuestions.length){
+    if(singleIndex < singleQuestions.length - 1){
+      singleIndex++;
       renderSingleQuestion();
     } else {
+      // Reached the 10th question without picking an option -> submit
       showSingleResults();
     }
   });
@@ -748,7 +747,6 @@ function startSingleQuiz(topic){
     quizWrap.style.display = 'none';
     quizResultScreen.style.display = 'flex';
 
-    // Calculate final score accurately from the 10 stored answers
     const finalScore = singleQuestions.filter(q => 
       q.userAnswer !== null && 
       String(q.userAnswer).trim().toLowerCase() === String(q.correctText).trim().toLowerCase()
@@ -758,8 +756,19 @@ function startSingleQuiz(topic){
     document.getElementById('quizFinalMessage').textContent =
       finalScore === singleQuestions.length ? '🌟 Outstanding work!' : '👍 Great effort! Play again to improve!';
   }
-  // Arcade (2-Player) Topic Picker
-  // Arcade (2-Player) Topic Picker
+
+  document.getElementById('quizPlayAgainBtn')?.addEventListener('click', () => {
+    startSingleQuiz(currentTopic);
+  });
+
+  window.singleQuizReset = () => {
+    quizWrap.style.display = 'none';
+    quizResultScreen.style.display = 'none';
+    quizSingleTopicPicker.style.display = 'flex';
+    document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
+  };
+
+  /* ------------------- 2-PLAYER ARCADE ------------------- */
   document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
@@ -776,7 +785,6 @@ function startSingleQuiz(topic){
       return;
     }
 
-    // Pick 10 random questions and initialize player answers
     arcadeQuestions = shuffleArray(pool).slice(0, 10).map(q => ({
       ...q,
       answerP1: null,
@@ -814,7 +822,6 @@ function startSingleQuiz(topic){
     fb1.textContent = '';
     fb2.textContent = '';
 
-    // Clock rendering for Time topic
     const timeData = extractTimeFromText(q.correctText + ' ' + q.q);
     if(currentTopic === 'time' && timeData){
       arcadeClockVisualWrap.style.display = 'flex';
@@ -823,37 +830,41 @@ function startSingleQuiz(topic){
       arcadeClockVisualWrap.style.display = 'none';
     }
 
-    // Render options for both players
     renderArcadeOptions('arcadeOptionsP1', q, 1);
     renderArcadeOptions('arcadeOptionsP2', q, 2);
 
-    const bothAnswered = q.answerP1 !== null && q.answerP2 !== null;
+    const bothDecided = q.answerP1 !== null && q.answerP2 !== null;
 
-    if(bothAnswered){
+    if(bothDecided){
       revealBothAnswers();
     } else {
       if(q.answerP1 !== null){
-        fb1.textContent = '🔒 Answer locked! Waiting for P2...';
+        fb1.textContent = '🔒 Locked! Waiting for P2...';
         fb1.style.color = '#1d6fa5';
       }
       if(q.answerP2 !== null){
-        fb2.textContent = '🔒 Answer locked! Waiting for P1...';
+        fb2.textContent = '🔒 Locked! Waiting for P1...';
         fb2.style.color = '#d1402a';
       }
     }
 
-    // Update Previous / Next navigation buttons
+    // Previous and Next buttons:
     const prevBtn = document.getElementById('arcadePrevBtn');
     const nextBtn = document.getElementById('arcadeNextBtn');
+
     if(prevBtn) prevBtn.disabled = arcadeIndex === 0;
-    if(nextBtn) nextBtn.disabled = !bothAnswered;
+
+    // Next is ALWAYS enabled so players can skip
+    if(nextBtn){
+      nextBtn.disabled = false;
+      nextBtn.textContent = arcadeIndex === arcadeQuestions.length - 1 ? 'Finish 🏁' : 'Next Question ➡️';
+    }
   }
 
   function renderArcadeOptions(containerId, q, playerNum){
     const container = document.getElementById(containerId);
     container.innerHTML = '';
     const selectedAns = playerNum === 1 ? q.answerP1 : q.answerP2;
-    const bothAnswered = q.answerP1 !== null && q.answerP2 !== null;
 
     q.options.forEach(opt => {
       const btn = document.createElement('button');
@@ -863,7 +874,6 @@ function startSingleQuiz(topic){
       if(selectedAns !== null){
         btn.disabled = true;
         if(opt === selectedAns){
-          // Show pending neutral color if opponent hasn't answered yet
           btn.classList.add(playerNum === 1 ? 'pending-p1' : 'pending-p2');
         }
       } else {
@@ -879,40 +889,43 @@ function startSingleQuiz(topic){
     if(playerNum === 1) q.answerP1 = selected;
     if(playerNum === 2) q.answerP2 = selected;
 
-    // Lock player's panel
     const panelBtns = document.querySelectorAll(`#arcadeOptionsP${playerNum} .arcadeOptBtn`);
     panelBtns.forEach(b => b.disabled = true);
     selectedBtn.classList.add(playerNum === 1 ? 'pending-p1' : 'pending-p2');
 
     const fb = document.getElementById(`arcadeFeedbackP${playerNum}`);
 
-    // If opponent hasn't answered yet, do not reveal the answer
     if(q.answerP1 === null || q.answerP2 === null){
       const otherP = playerNum === 1 ? 'Player 2' : 'Player 1';
-      fb.textContent = `🔒 Choice locked! Waiting for ${otherP}...`;
+      fb.textContent = `🔒 Locked! Waiting for ${otherP}...`;
       fb.style.color = playerNum === 1 ? '#1d6fa5' : '#d1402a';
       return;
     }
 
-    // Both players have now answered
+    // Both players have picked
     revealBothAnswers();
     confettiBurst();
-    document.getElementById('arcadeNextBtn').disabled = false;
   }
 
   function revealBothAnswers(){
     const q = arcadeQuestions[arcadeIndex];
     const correct = String(q.correctText).trim().toLowerCase();
 
-    // Check Player 1
-    const p1Correct = String(q.answerP1).trim().toLowerCase() === correct;
+    // Player 1 resolution
     const fb1 = document.getElementById('arcadeFeedbackP1');
-    fb1.textContent = p1Correct ? '🎉 Correct!' : `❌ Wrong! (${q.correctText})`;
-    fb1.style.color = p1Correct ? '#27ae60' : '#e74c3c';
+    if(q.answerP1 === '__SKIPPED__'){
+      fb1.textContent = `⏭️ Skipped (Wrong)! Ans: ${q.correctText}`;
+      fb1.style.color = '#e74c3c';
+    } else {
+      const p1Correct = String(q.answerP1).trim().toLowerCase() === correct;
+      fb1.textContent = p1Correct ? '🎉 Correct!' : `❌ Wrong! Ans: ${q.correctText}`;
+      fb1.style.color = p1Correct ? '#27ae60' : '#e74c3c';
+    }
 
     document.querySelectorAll('#arcadeOptionsP1 .arcadeOptBtn').forEach(b => {
       b.classList.remove('pending-p1');
       if(b.textContent.trim().toLowerCase() === String(q.answerP1).trim().toLowerCase()){
+        const p1Correct = String(q.answerP1).trim().toLowerCase() === correct;
         b.classList.add(p1Correct ? 'correct' : 'wrong');
       }
       if(b.textContent.trim().toLowerCase() === correct){
@@ -920,15 +933,21 @@ function startSingleQuiz(topic){
       }
     });
 
-    // Check Player 2
-    const p2Correct = String(q.answerP2).trim().toLowerCase() === correct;
+    // Player 2 resolution
     const fb2 = document.getElementById('arcadeFeedbackP2');
-    fb2.textContent = p2Correct ? '🎉 Correct!' : `❌ Wrong! (${q.correctText})`;
-    fb2.style.color = p2Correct ? '#27ae60' : '#e74c3c';
+    if(q.answerP2 === '__SKIPPED__'){
+      fb2.textContent = `⏭️ Skipped (Wrong)! Ans: ${q.correctText}`;
+      fb2.style.color = '#e74c3c';
+    } else {
+      const p2Correct = String(q.answerP2).trim().toLowerCase() === correct;
+      fb2.textContent = p2Correct ? '🎉 Correct!' : `❌ Wrong! Ans: ${q.correctText}`;
+      fb2.style.color = p2Correct ? '#27ae60' : '#e74c3c';
+    }
 
     document.querySelectorAll('#arcadeOptionsP2 .arcadeOptBtn').forEach(b => {
       b.classList.remove('pending-p2');
       if(b.textContent.trim().toLowerCase() === String(q.answerP2).trim().toLowerCase()){
+        const p2Correct = String(q.answerP2).trim().toLowerCase() === correct;
         b.classList.add(p2Correct ? 'correct' : 'wrong');
       }
       if(b.textContent.trim().toLowerCase() === correct){
@@ -942,19 +961,26 @@ function startSingleQuiz(topic){
     document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scores.p2}`;
   }
 
+  // Next Question handling in 2P Mode:
+  // If either player hasn't answered when Next is pressed, they are deemed to have given the wrong answer
+  document.getElementById('arcadeNextBtn')?.addEventListener('click', () => {
+    const q = arcadeQuestions[arcadeIndex];
+
+    if(q.answerP1 === null) q.answerP1 = '__SKIPPED__';
+    if(q.answerP2 === null) q.answerP2 = '__SKIPPED__';
+
+    if(arcadeIndex < arcadeQuestions.length - 1){
+      arcadeIndex++;
+      renderArcadeQuestion();
+    } else {
+      showArcadeResults();
+    }
+  });
+
   document.getElementById('arcadePrevBtn')?.addEventListener('click', () => {
     if(arcadeIndex > 0){
       arcadeIndex--;
       renderArcadeQuestion();
-    }
-  });
-
-  document.getElementById('arcadeNextBtn')?.addEventListener('click', () => {
-    arcadeIndex++;
-    if(arcadeIndex < arcadeQuestions.length){
-      renderArcadeQuestion();
-    } else {
-      showArcadeResults();
     }
   });
 

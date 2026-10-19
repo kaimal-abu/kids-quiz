@@ -187,35 +187,39 @@ button.ctrl:disabled { opacity: 0.55; cursor: not-allowed; }
   border-color: #c0392b !important;
 } }
 
+/* Centered mode picker container (both vertically and horizontally) */
 .quizModePicker {
+  width: 100%;
+  max-width: 520px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  min-height: 0;
-  gap: 22px;
-  padding: 20px;
-  width: 100%;
-  margin: auto 0; /* Absorbs vertical space to lock true vertical centering */
+  align-items: center;    /* Center tiles horizontally */
+  justify-content: center;/* Center tiles vertically */
+  margin: auto !important;/* Locks true vertical centering */
+  gap: 20px;
+  padding: 16px 20px;
+  box-sizing: border-box;
 }
+
+/* The mode cards */
 .quizModeCard {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(8px);
-  border-radius: 24px;
-  padding: 22px 30px;
-  max-width: 460px;
-  width: 100%;
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
+  border-radius: 22px;
+  padding: 22px 28px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
   text-align: center;
   cursor: pointer;
   border: 4px solid transparent;
-  transition: all 0.18s ease;
+  transition: all 0.16s ease;
 }
 
 .quizModeCard:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.13);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.14);
 }
 
 .quizModeCard:active {
@@ -343,4 +347,17 @@ html, body {
   background: #d1402a !important;
   color: #ffffff !important;
   border-color: #96281b !important;
+}
+
+#pageQuizEl {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;    /* Center header and mode picker horizontally */
+}
+
+#pageQuizEl.visible {
+  display: flex;
 }
