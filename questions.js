@@ -170,7 +170,6 @@ function showPage(page){
 document.getElementById('navIndia')?.addEventListener('click', () => showPage('india'));
 document.getElementById('navWorld')?.addEventListener('click', () => showPage('world'));
 document.getElementById('navQuiz')?.addEventListener('click', () => showPage('quiz'));
-document.getElementById('globalHomeBtn')?.addEventListener('click', () => quitToQuizHome());
 
 function quitToQuizHome(){
   try { if('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e){}
@@ -760,6 +759,7 @@ function startSingleQuiz(topic){
       finalScore === singleQuestions.length ? '🌟 Outstanding work!' : '👍 Great effort! Play again to improve!';
   }
   // Arcade (2-Player) Topic Picker
+  // Arcade (2-Player) Topic Picker
   document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
@@ -769,38 +769,52 @@ function startSingleQuiz(topic){
     });
   });
 
-function startArcadeQuiz(topic){
+  function startArcadeQuiz(topic){
     const pool = QUIZ_DATA[topic] || [];
     if(!pool.length){
       alert('No questions found for this topic!');
       return;
     }
 
-    // Randomly pick 10 questions for the 2-player battle
-    arcadeQuestions = shuffleArray(pool).slice(0, 10);
-    arcadeIndex = 0;
-    scoreP1 = 0;
-    scoreP2 = 0;
+    // Pick 10 random questions and initialize player answers
+    arcadeQuestions = shuffleArray(pool).slice(0, 10).map(q => ({
+      ...q,
+      answerP1: null,
+      answerP2: null
+    }));
 
+    arcadeIndex = 0;
     arcadeTopicPicker.style.display = 'none';
     arcadeResultWrap.style.display = 'none';
     arcadeWrap.style.display = 'flex';
     renderArcadeQuestion();
   }
 
+  function getArcadeScores(){
+    let p1 = 0, p2 = 0;
+    arcadeQuestions.forEach(q => {
+      const correct = String(q.correctText).trim().toLowerCase();
+      if(q.answerP1 !== null && String(q.answerP1).trim().toLowerCase() === correct) p1++;
+      if(q.answerP2 !== null && String(q.answerP2).trim().toLowerCase() === correct) p2++;
+    });
+    return { p1, p2 };
+  }
+
   function renderArcadeQuestion(){
     const q = arcadeQuestions[arcadeIndex];
-    answeredP1 = false;
-    answeredP2 = false;
+    const scores = getArcadeScores();
 
-    document.getElementById('arcadeScoreP1').textContent = `🔵 P1: ${scoreP1}`;
-    document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scoreP2}`;
+    document.getElementById('arcadeScoreP1').textContent = `🔵 P1: ${scores.p1}`;
+    document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scores.p2}`;
     document.getElementById('arcadeProgress').textContent = `Question ${arcadeIndex + 1} of ${arcadeQuestions.length}`;
     document.getElementById('arcadeQuestionText').textContent = q.q;
 
-    document.getElementById('arcadeFeedbackP1').textContent = '';
-    document.getElementById('arcadeFeedbackP2').textContent = '';
+    const fb1 = document.getElementById('arcadeFeedbackP1');
+    const fb2 = document.getElementById('arcadeFeedbackP2');
+    fb1.textContent = '';
+    fb2.textContent = '';
 
+    // Clock rendering for Time topic
     const timeData = extractTimeFromText(q.correctText + ' ' + q.q);
     if(currentTopic === 'time' && timeData){
       arcadeClockVisualWrap.style.display = 'flex';
@@ -809,59 +823,131 @@ function startArcadeQuiz(topic){
       arcadeClockVisualWrap.style.display = 'none';
     }
 
+    // Render options for both players
     renderArcadeOptions('arcadeOptionsP1', q, 1);
     renderArcadeOptions('arcadeOptionsP2', q, 2);
 
-    document.getElementById('arcadeNextBtn').disabled = true;
+    const bothAnswered = q.answerP1 !== null && q.answerP2 !== null;
+
+    if(bothAnswered){
+      revealBothAnswers();
+    } else {
+      if(q.answerP1 !== null){
+        fb1.textContent = '🔒 Answer locked! Waiting for P2...';
+        fb1.style.color = '#1d6fa5';
+      }
+      if(q.answerP2 !== null){
+        fb2.textContent = '🔒 Answer locked! Waiting for P1...';
+        fb2.style.color = '#d1402a';
+      }
+    }
+
+    // Update Previous / Next navigation buttons
+    const prevBtn = document.getElementById('arcadePrevBtn');
+    const nextBtn = document.getElementById('arcadeNextBtn');
+    if(prevBtn) prevBtn.disabled = arcadeIndex === 0;
+    if(nextBtn) nextBtn.disabled = !bothAnswered;
   }
 
   function renderArcadeOptions(containerId, q, playerNum){
     const container = document.getElementById(containerId);
     container.innerHTML = '';
-    const shuffledOpts = shuffleArray(q.options);
+    const selectedAns = playerNum === 1 ? q.answerP1 : q.answerP2;
+    const bothAnswered = q.answerP1 !== null && q.answerP2 !== null;
 
-    shuffledOpts.forEach(opt => {
+    q.options.forEach(opt => {
       const btn = document.createElement('button');
       btn.className = 'quizOptBtn arcadeOptBtn';
       btn.textContent = opt;
-      btn.addEventListener('click', () => handleArcadeAnswer(playerNum, opt, q.correctText, btn));
+
+      if(selectedAns !== null){
+        btn.disabled = true;
+        if(opt === selectedAns){
+          // Show pending neutral color if opponent hasn't answered yet
+          btn.classList.add(playerNum === 1 ? 'pending-p1' : 'pending-p2');
+        }
+      } else {
+        btn.addEventListener('click', () => handleArcadeAnswer(playerNum, opt, btn));
+      }
+
       container.appendChild(btn);
     });
   }
 
-  function handleArcadeAnswer(playerNum, selected, correct, selectedBtn){
-    const fb = document.getElementById(`arcadeFeedbackP${playerNum}`);
+  function handleArcadeAnswer(playerNum, selected, selectedBtn){
+    const q = arcadeQuestions[arcadeIndex];
+    if(playerNum === 1) q.answerP1 = selected;
+    if(playerNum === 2) q.answerP2 = selected;
+
+    // Lock player's panel
     const panelBtns = document.querySelectorAll(`#arcadeOptionsP${playerNum} .arcadeOptBtn`);
     panelBtns.forEach(b => b.disabled = true);
+    selectedBtn.classList.add(playerNum === 1 ? 'pending-p1' : 'pending-p2');
 
-    if(playerNum === 1) answeredP1 = true;
-    if(playerNum === 2) answeredP2 = true;
+    const fb = document.getElementById(`arcadeFeedbackP${playerNum}`);
 
-    if(String(selected).trim().toLowerCase() === String(correct).trim().toLowerCase()){
-      selectedBtn.classList.add('correct');
-      fb.textContent = '✅ Got it!';
-      fb.style.color = '#27ae60';
-      if(playerNum === 1) scoreP1++;
-      if(playerNum === 2) scoreP2++;
-      confettiBurst();
-    } else {
-      selectedBtn.classList.add('wrong');
-      panelBtns.forEach(b => {
-        if(b.textContent.trim().toLowerCase() === String(correct).trim().toLowerCase()){
-          b.classList.add('correct');
-        }
-      });
-      fb.textContent = `❌ Nope!`;
-      fb.style.color = '#e74c3c';
+    // If opponent hasn't answered yet, do not reveal the answer
+    if(q.answerP1 === null || q.answerP2 === null){
+      const otherP = playerNum === 1 ? 'Player 2' : 'Player 1';
+      fb.textContent = `🔒 Choice locked! Waiting for ${otherP}...`;
+      fb.style.color = playerNum === 1 ? '#1d6fa5' : '#d1402a';
+      return;
     }
 
-    document.getElementById('arcadeScoreP1').textContent = `🔵 P1: ${scoreP1}`;
-    document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scoreP2}`;
-
-    if(answeredP1 && answeredP2){
-      document.getElementById('arcadeNextBtn').disabled = false;
-    }
+    // Both players have now answered
+    revealBothAnswers();
+    confettiBurst();
+    document.getElementById('arcadeNextBtn').disabled = false;
   }
+
+  function revealBothAnswers(){
+    const q = arcadeQuestions[arcadeIndex];
+    const correct = String(q.correctText).trim().toLowerCase();
+
+    // Check Player 1
+    const p1Correct = String(q.answerP1).trim().toLowerCase() === correct;
+    const fb1 = document.getElementById('arcadeFeedbackP1');
+    fb1.textContent = p1Correct ? '🎉 Correct!' : `❌ Wrong! (${q.correctText})`;
+    fb1.style.color = p1Correct ? '#27ae60' : '#e74c3c';
+
+    document.querySelectorAll('#arcadeOptionsP1 .arcadeOptBtn').forEach(b => {
+      b.classList.remove('pending-p1');
+      if(b.textContent.trim().toLowerCase() === String(q.answerP1).trim().toLowerCase()){
+        b.classList.add(p1Correct ? 'correct' : 'wrong');
+      }
+      if(b.textContent.trim().toLowerCase() === correct){
+        b.classList.add('correct');
+      }
+    });
+
+    // Check Player 2
+    const p2Correct = String(q.answerP2).trim().toLowerCase() === correct;
+    const fb2 = document.getElementById('arcadeFeedbackP2');
+    fb2.textContent = p2Correct ? '🎉 Correct!' : `❌ Wrong! (${q.correctText})`;
+    fb2.style.color = p2Correct ? '#27ae60' : '#e74c3c';
+
+    document.querySelectorAll('#arcadeOptionsP2 .arcadeOptBtn').forEach(b => {
+      b.classList.remove('pending-p2');
+      if(b.textContent.trim().toLowerCase() === String(q.answerP2).trim().toLowerCase()){
+        b.classList.add(p2Correct ? 'correct' : 'wrong');
+      }
+      if(b.textContent.trim().toLowerCase() === correct){
+        b.classList.add('correct');
+      }
+    });
+
+    // Update real-time scoreboard
+    const scores = getArcadeScores();
+    document.getElementById('arcadeScoreP1').textContent = `🔵 P1: ${scores.p1}`;
+    document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scores.p2}`;
+  }
+
+  document.getElementById('arcadePrevBtn')?.addEventListener('click', () => {
+    if(arcadeIndex > 0){
+      arcadeIndex--;
+      renderArcadeQuestion();
+    }
+  });
 
   document.getElementById('arcadeNextBtn')?.addEventListener('click', () => {
     arcadeIndex++;
@@ -876,12 +962,13 @@ function startArcadeQuiz(topic){
     arcadeWrap.style.display = 'none';
     arcadeResultWrap.style.display = 'flex';
 
+    const scores = getArcadeScores();
     let winnerMsg = "It's a Tie! 🤝";
-    if(scoreP1 > scoreP2) winnerMsg = '🎉 Player 1 Wins! 🔵';
-    if(scoreP2 > scoreP1) winnerMsg = '🎉 Player 2 Wins! 🔴';
+    if(scores.p1 > scores.p2) winnerMsg = '🎉 Player 1 Wins! 🔵';
+    if(scores.p2 > scores.p1) winnerMsg = '🎉 Player 2 Wins! 🔴';
 
     document.getElementById('arcadeFinalWinner').textContent = winnerMsg;
-    document.getElementById('arcadeFinalScores').textContent = `P1 Score: ${scoreP1}  |  P2 Score: ${scoreP2}`;
+    document.getElementById('arcadeFinalScores').textContent = `P1 Score: ${scores.p1} / ${arcadeQuestions.length}  |  P2 Score: ${scores.p2} / ${arcadeQuestions.length}`;
   }
 
   document.getElementById('arcadePlayAgainBtn')?.addEventListener('click', () => {

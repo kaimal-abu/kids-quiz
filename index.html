@@ -21,11 +21,11 @@
 </div>
 
 <!-- Top Navigation -->
+<!-- Top Navigation -->
 <div id="pageNav">
   <button class="pageNavBtn active" id="navIndia">🇮🇳 India Map</button>
   <button class="pageNavBtn" id="navWorld">🌍 World Map</button>
   <button class="pageNavBtn" id="navQuiz">🧠 Quiz Time</button>
-  <button class="pageNavBtn btn-nav-home" id="globalHomeBtn" title="Quit to Quiz Home">🏠 Home</button>
 </div>
 
 <!-- ============ PAGE 1: INDIA ============ -->
@@ -48,8 +48,7 @@
   </div>
   <div class="quizBar" id="quizBarIN"></div>
   <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderIN"><div class="loading"><span class="spinner">🗺️</span><span>Loading India map…</span></div></div></div>
-  <div class="controls">
-    <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
+<div class="controls">
     <button class="ctrl btn-secondary" id="speakBtnIN">🔊 Say it again</button>
     <button class="ctrl btn-toggle" id="dotsBtnIN">🟡 Hide Capital Dots</button>
     <button class="ctrl btn-reset" id="resetBtnIN">🔄 Reset</button>
@@ -78,7 +77,6 @@
   <div class="quizBar" id="quizBarWO"></div>
   <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderWO"><div class="loading"><span class="spinner">🌍</span><span>Loading world map…</span></div></div></div>
   <div class="controls">
-    <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
     <button class="ctrl btn-secondary" id="speakBtnWO">🔊 Say it again</button>
     <button class="ctrl btn-reset" id="resetBtnWO">🔄 Reset</button>
   </div>
@@ -215,7 +213,8 @@
         </div>
       </div>
 
-      <div class="quizNavRow" style="max-width:380px; margin-top:10px;">
+	<div class="quizNavRow" style="max-width:440px; margin-top:10px;">
+        <button class="ctrl btn-nav-step" id="arcadePrevBtn">⬅️ Previous</button>
         <button class="ctrl btn-nav-step" id="arcadeNextBtn" disabled>Next Question ➡️</button>
       </div>
     </div>
