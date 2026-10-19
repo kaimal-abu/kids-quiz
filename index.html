@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>India, World & Quiz for Kids</title>
+<title>Kids Learning & Quiz App</title>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body class="page-india">
+
+<!-- TOP GLOBAL NAVIGATION -->
 <div id="pageNav">
   <button class="pageNavBtn active" id="navIndia">🇮🇳 India Map</button>
   <button class="pageNavBtn" id="navWorld">🌍 World Map</button>
   <button class="pageNavBtn" id="navQuiz">🧠 Quiz Time</button>
+  <button class="pageNavBtn btn-nav-home" id="globalHomeBtn" title="Quit to Quiz Home">🏠 Home</button>
 </div>
 
 <!-- ============ PAGE 1: INDIA ============ -->
@@ -36,7 +39,7 @@
   <div class="quizBar" id="quizBarIN"></div>
   <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderIN"><div class="loading"><span class="spinner">🗺️</span><span>Loading India map…</span></div></div></div>
   <div class="controls">
-    <button class="ctrl btn-home" id="homeBtnIN">🏠 Home</button>
+    <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
     <button class="ctrl btn-secondary" id="speakBtnIN">🔊 Say it again</button>
     <button class="ctrl btn-toggle" id="dotsBtnIN">🟡 Hide Capital Dots</button>
     <button class="ctrl btn-reset" id="resetBtnIN">🔄 Reset</button>
@@ -65,35 +68,41 @@
   <div class="quizBar" id="quizBarWO"></div>
   <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderWO"><div class="loading"><span class="spinner">🌍</span><span>Loading world map…</span></div></div></div>
   <div class="controls">
-    <button class="ctrl btn-home" id="homeBtnWO">🏠 Home</button>
+    <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
     <button class="ctrl btn-secondary" id="speakBtnWO">🔊 Say it again</button>
     <button class="ctrl btn-reset" id="resetBtnWO">🔄 Reset</button>
   </div>
 </div>
 
-<!-- ============ PAGE 3: QUIZ ============ -->
+<!-- ============ PAGE 3: QUIZ (INCLUDES CLOCK) ============ -->
 <div class="app-page" id="pageQuizEl">
   <header>
     <h1>🧠 Fun Quiz Time! 🧠</h1>
     <p id="quizHeaderSub">Choose how you want to play!</p>
   </header>
 
+  <!-- Quiz Modes Selector (Single, Arcade, Clock Quiz) -->
   <div id="quizMainModePicker" class="quizModePicker">
     <div class="quizModeCard single" id="pickSingleMode">
       <div class="modeIcon">🙋</div>
-      <div class="modeTitle">Quiz - Single</div>
-      <div class="modeDesc">Play alone and test what you know, one question at a time.</div>
+      <div class="modeTitle">Quiz - Single Player</div>
+      <div class="modeDesc">Test what you know across fun trivia topics!</div>
+    </div>
+    <div class="quizModeCard clockCard" id="pickClockMode">
+      <div class="modeIcon">⏰</div>
+      <div class="modeTitle">Clock & Time Quiz</div>
+      <div class="modeDesc">Look at the hands of the clock and tell the exact time!</div>
     </div>
     <div class="quizModeCard arcade" id="pickArcadeMode">
       <div class="modeIcon">🕹️</div>
-      <div class="modeTitle">Quiz - Arcade</div>
-      <div class="modeDesc">Two players compete on the same question with separate scores!</div>
+      <div class="modeTitle">Quiz - 2 Player Arcade</div>
+      <div class="modeDesc">Two players answer on the same screen with separate scores!</div>
     </div>
   </div>
 
   <!-- SINGLE PLAYER UI -->
   <div id="quizSingleContainer" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-    <div id="quizTopicPicker" class="modeBar" style="flex-wrap: wrap; gap: 10px; padding: 10px;">
+    <div id="quizTopicPicker" class="modeBar" style="flex-wrap: wrap; gap: 8px; padding: 8px;">
       <button class="modeBtn topicBtn" data-topic="mythology">🕉️ Mythology</button>
       <button class="modeBtn topicBtn" data-topic="sports">🏏 Sports</button>
       <button class="modeBtn topicBtn" data-topic="animals">🐯 Animals</button>
@@ -101,15 +110,19 @@
       <button class="modeBtn topicBtn" data-topic="maths">🔢 Maths</button>
       <button class="modeBtn topicBtn" data-topic="english">🔤 English</button>
       <button class="modeBtn topicBtn" data-topic="science">🔬 Science</button>
+      <button class="modeBtn topicBtn" data-topic="clock">⏰ Clock Time</button>
     </div>
 
     <div id="quizWrap" style="display:none; flex:1; flex-direction:column; align-items:center; justify-content:center; padding: 4px 12px; overflow:auto;">
-      <div id="quizProgress" style="font-size: clamp(13px,2.6vw,16px); color:#a6337a; font-weight:bold; margin-bottom:6px; text-align:center;"></div>
-      <div id="quizQuestionCard" style="background:#fff; border-radius:20px; padding:20px; max-width:520px; width:100%; box-shadow:0 6px 16px rgba(0,0,0,0.15); text-align:center;">
-        <div id="quizEmoji" style="font-size:44px; margin-bottom:8px;"></div>
-        <div id="quizQuestionText" style="font-size: clamp(16px,3.6vw,22px); font-weight:bold; color:#2a6f2b; margin-bottom:16px;"></div>
-        <div id="quizOptions" style="display:flex; flex-direction:column; gap:10px;"></div>
-        <div id="quizFeedback" style="margin-top:12px; font-size: clamp(14px,3vw,18px); font-weight:bold; min-height:26px;"></div>
+      <div class="cardHeaderRow">
+        <div id="quizProgress" style="font-size: clamp(13px,2.6vw,16px); color:#a6337a; font-weight:bold;"></div>
+        <button class="miniHomeBtn" onclick="quitToQuizHome()">🏠 Quit</button>
+      </div>
+      <div id="quizQuestionCard" style="background:#fff; border-radius:20px; padding:18px; max-width:520px; width:100%; box-shadow:0 6px 16px rgba(0,0,0,0.15); text-align:center;">
+        <div id="quizEmoji" style="font-size:42px; margin-bottom:6px;"></div>
+        <div id="quizQuestionText" style="font-size: clamp(15px,3.4vw,20px); font-weight:bold; color:#2a6f2b; margin-bottom:14px;"></div>
+        <div id="quizOptions" style="display:flex; flex-direction:column; gap:9px;"></div>
+        <div id="quizFeedback" style="margin-top:10px; font-size: clamp(14px,3vw,17px); font-weight:bold; min-height:24px;"></div>
         <div id="quizTimerInfo" class="delayTimerBadge" style="display:none;"></div>
       </div>
     </div>
@@ -118,19 +131,59 @@
       <div style="font-size:60px;">🏆</div>
       <div id="quizFinalScore" style="font-size: clamp(20px,5vw,32px); font-weight:bold; color:#d1402a; margin: 10px 0;"></div>
       <div id="quizFinalMessage" style="font-size: clamp(14px,3vw,18px); color:#34495e; margin-bottom: 16px;"></div>
-      <button class="ctrl btn-secondary" id="quizPlayAgainBtn" style="max-width:220px;">🔁 Play Again</button>
-    </div>
-
-    <div class="controls" id="quizBottomControls" style="display:none;">
-      <button class="ctrl btn-home" id="quizToHomeBtn">🏠 Home</button>
-      <button class="ctrl btn-reset" id="quizBackBtn">⬅️ Choose Another Topic</button>
-      <button class="ctrl btn-toggle" id="quizToMainModeBtn1">🎮 Modes</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+        <button class="ctrl btn-secondary" id="quizPlayAgainBtn">🔁 Play Again</button>
+        <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
+      </div>
     </div>
   </div>
 
-  <!-- ARCADE UI -->
+  <!-- CLOCK QUIZ CONTAINER (NESTED INSIDE QUIZ TAB) -->
+  <div id="quizClockContainer" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
+    <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:6px 12px; overflow:auto;">
+      <div class="cardHeaderRow" style="max-width:520px; width:100%;">
+        <div id="clockProgress" style="font-size: clamp(13px,2.6vw,16px); color:#2c3e50; font-weight:bold;">Clock Quiz — Question 1 of 10</div>
+        <button class="miniHomeBtn" onclick="quitToQuizHome()">🏠 Quit</button>
+      </div>
+      
+      <div id="clockCardBody" style="background:#fff; border-radius:24px; padding:16px 20px; max-width:520px; width:100%; box-shadow:0 8px 20px rgba(0,0,0,0.12); text-align:center;">
+        <div class="clockContainer">
+          <svg id="clockSvg" viewBox="0 0 320 320" width="260" height="260">
+            <circle cx="160" cy="160" r="145" class="clock-outer-ring"/>
+            <circle cx="160" cy="160" r="120" class="clock-face"/>
+            <g id="clockTicks"></g>
+            <g id="clockOuterMinutes"></g>
+            <g id="clockHourNumbers"></g>
+            <line id="hourHand" x1="160" y1="160" x2="160" y2="105" class="hand-hour"/>
+            <line id="minuteHand" x1="160" y1="160" x2="160" y2="70" class="hand-minute"/>
+            <circle cx="160" cy="160" r="6" class="clock-pin"/>
+          </svg>
+        </div>
+
+        <div style="font-size: clamp(15px, 3.4vw, 20px); font-weight:bold; color:#2c3e50; margin:8px 0 10px;">
+          What time is the clock showing?
+        </div>
+
+        <div id="clockOptions" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+        <div id="clockFeedback" style="margin-top:10px; font-size: clamp(14px,3vw,17px); font-weight:bold; min-height:24px;"></div>
+        <div id="clockTimerInfo" class="delayTimerBadge" style="display:none;"></div>
+      </div>
+
+      <div id="clockResultScreen" style="display:none; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 10px 20px;">
+        <div style="font-size:60px;">⏰🎉</div>
+        <div id="clockFinalScore" style="font-size: clamp(20px,5vw,32px); font-weight:bold; color:#27ae60; margin: 10px 0;"></div>
+        <div id="clockFinalMessage" style="font-size: clamp(14px,3vw,18px); color:#34495e; margin-bottom: 16px;"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+          <button class="ctrl btn-secondary" id="clockPlayAgainBtn">🔁 Play Again</button>
+          <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ARCADE (2-PLAYER) UI -->
   <div id="arcadeContainer" style="display:none; flex-direction:column; flex:1; overflow:hidden;">
-    <div id="arcadeTopicPicker" class="modeBar" style="flex-wrap: wrap; gap: 10px; padding: 10px;">
+    <div id="arcadeTopicPicker" class="modeBar" style="flex-wrap: wrap; gap: 8px; padding: 8px;">
       <button class="modeBtn topicBtn" data-topic="mythology">🕉️ Mythology</button>
       <button class="modeBtn topicBtn" data-topic="sports">🏏 Sports</button>
       <button class="modeBtn topicBtn" data-topic="animals">🐯 Animals</button>
@@ -141,11 +194,14 @@
     </div>
 
     <div class="arcadeWrap" id="arcadeWrap">
-      <div class="arcadeScoreBar">
-        <div class="arcadeScoreCard p1" id="arcadeScoreP1">🔵 Player 1: 0</div>
-        <div class="arcadeScoreCard p2" id="arcadeScoreP2">🔴 Player 2: 0</div>
+      <div class="cardHeaderRow" style="max-width:700px; width:100%;">
+        <div class="arcadeScoreBar" style="margin-bottom:0;">
+          <div class="arcadeScoreCard p1" id="arcadeScoreP1">🔵 P1: 0</div>
+          <div class="arcadeScoreCard p2" id="arcadeScoreP2">🔴 P2: 0</div>
+        </div>
+        <button class="miniHomeBtn" onclick="quitToQuizHome()">🏠 Quit</button>
       </div>
-      <div id="arcadeProgress" style="font-size: clamp(12px,2.4vw,15px); color:#a6337a; font-weight:bold; margin-bottom:6px; text-align:center;"></div>
+      <div id="arcadeProgress" style="font-size: clamp(12px,2.4vw,15px); color:#a6337a; font-weight:bold; margin:4px 0; text-align:center;"></div>
       <div class="arcadeQuestionCard">
         <div class="arcadeEmoji" id="arcadeEmoji"></div>
         <div class="arcadeQuestionText" id="arcadeQuestionText"></div>
@@ -153,12 +209,12 @@
       </div>
       <div class="playersRow">
         <div class="playerPanel p1">
-          <div class="playerLabel">🔵 Player 1 — pick your answer</div>
+          <div class="playerLabel">🔵 Player 1</div>
           <div id="arcadeOptionsP1"></div>
           <div class="arcadeFeedback" id="arcadeFeedbackP1"></div>
         </div>
         <div class="playerPanel p2">
-          <div class="playerLabel">🔴 Player 2 — pick your answer</div>
+          <div class="playerLabel">🔴 Player 2</div>
           <div id="arcadeOptionsP2"></div>
           <div class="arcadeFeedback" id="arcadeFeedbackP2"></div>
         </div>
@@ -169,13 +225,10 @@
       <div style="font-size:60px;">🏆</div>
       <div id="arcadeFinalWinner" style="font-size: clamp(20px,5vw,30px); font-weight:bold; color:#d1402a; margin: 10px 0;"></div>
       <div id="arcadeFinalScores" style="font-size: clamp(15px,3.2vw,19px); color:#34495e; margin-bottom: 16px;"></div>
-      <button class="ctrl btn-secondary" id="arcadePlayAgainBtn" style="max-width:240px;">🔁 Play Again</button>
-    </div>
-
-    <div class="controls" id="arcadeBottomControls" style="display:none;">
-      <button class="ctrl btn-home" id="arcadeToHomeBtn">🏠 Home</button>
-      <button class="ctrl btn-reset" id="arcadeBackBtn">⬅️ Choose Another Topic</button>
-      <button class="ctrl btn-toggle" id="quizToMainModeBtn2">🎮 Modes</button>
+      <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+        <button class="ctrl btn-secondary" id="arcadePlayAgainBtn">🔁 Play Again</button>
+        <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
+      </div>
     </div>
   </div>
 </div>

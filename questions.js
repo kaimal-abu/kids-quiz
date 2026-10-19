@@ -106,7 +106,7 @@ const NE_NAME_ALIASES = {"United States": "United States of America"};
 /* ===================== SHARED HELPERS ===================== */
 function flagImgUrl(code){ if(!code || code.length !== 2) return null; return 'https://flagcdn.com/w80/' + code.toLowerCase() + '.png'; }
 function speak(text){ try{ if(!('speechSynthesis' in window)) return; window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-IN'; u.rate = 0.85; u.pitch = 1.1; window.speechSynthesis.speak(u); }catch(e){} }
-function confettiBurst(){ const c = document.getElementById('confetti'); const emojis = ['🎉','⭐','🎊','✨','🥳']; for(let i=0;i<16;i++){ const span = document.createElement('span'); span.className = 'confetti-piece'; span.textContent = emojis[Math.floor(Math.random()*emojis.length)]; span.style.left = Math.random()*100 + 'vw'; span.style.animationDuration = (1.2 + Math.random()*1.2) + 's'; span.style.fontSize = (16 + Math.random()*18) + 'px'; c.appendChild(span); setTimeout(()=>span.remove(), 2600); } }
+function confettiBurst(){ const c = document.getElementById('confetti'); const emojis = ['🎉','⭐','🎊','✨','🥳','⏰']; for(let i=0;i<16;i++){ const span = document.createElement('span'); span.className = 'confetti-piece'; span.textContent = emojis[Math.floor(Math.random()*emojis.length)]; span.style.left = Math.random()*100 + 'vw'; span.style.animationDuration = (1.2 + Math.random()*1.2) + 's'; span.style.fontSize = (16 + Math.random()*18) + 'px'; c.appendChild(span); setTimeout(()=>span.remove(), 2600); } }
 function shuffleArray(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
 
 // Universal Quit/Home Handler
@@ -115,13 +115,16 @@ function quitToQuizHome(){
   showPage('quiz');
   if(window.singleQuizReset) window.singleQuizReset();
   if(window.arcadeQuizReset) window.arcadeQuizReset();
+  if(window.clockQuizReset) window.clockQuizReset();
   const mainPicker = document.getElementById('quizMainModePicker');
   const singleContainer = document.getElementById('quizSingleContainer');
   const arcadeContainer = document.getElementById('arcadeContainer');
+  const clockContainer = document.getElementById('quizClockContainer');
   const headerSub = document.getElementById('quizHeaderSub');
   if(mainPicker) mainPicker.style.display = 'flex';
   if(singleContainer) singleContainer.style.display = 'none';
   if(arcadeContainer) arcadeContainer.style.display = 'none';
+  if(clockContainer) clockContainer.style.display = 'none';
   if(headerSub) headerSub.textContent = 'Choose how you want to play!';
 }
 
@@ -186,12 +189,18 @@ function buildIndiaModule(){
     }
     dotsGroup.style.display = dotsVisible ? '' : 'none';
   }
+
+  // Reliable offline vector map fallback that always renders immediately
   const FALLBACK_SVG_INDIA = `<svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg"><path id="JK" title="Jammu and Kashmir" d="M120,20 L200,10 L210,60 L150,70 Z"/><path id="PB" title="Punjab" d="M120,75 L160,72 L165,100 L125,105 Z"/><path id="RJ" title="Rajasthan" d="M60,110 L150,105 L160,220 L70,220 Z"/><path id="UP" title="Uttar Pradesh" d="M170,105 L280,100 L285,175 L175,180 Z"/><path id="MP" title="Madhya Pradesh" d="M150,190 L280,185 L285,260 L155,265 Z"/><path id="GJ" title="Gujarat" d="M40,225 L140,225 L130,300 L30,290 Z"/><path id="MH" title="Maharashtra" d="M150,270 L270,265 L265,340 L155,345 Z"/><path id="BR" title="Bihar" d="M290,185 L360,182 L362,225 L292,228 Z"/><path id="WB" title="West Bengal" d="M330,230 L380,228 L385,290 L335,295 Z"/><path id="OR" title="Odisha" d="M290,270 L350,268 L345,330 L285,335 Z"/><path id="KA" title="Karnataka" d="M160,350 L230,348 L225,420 L155,425 Z"/><path id="AP" title="Andhra Pradesh" d="M235,345 L300,342 L295,410 L230,415 Z"/><path id="TN" title="Tamil Nadu" d="M180,430 L250,428 L245,480 L175,485 Z"/><path id="KL" title="Kerala" d="M150,430 L175,428 L170,480 L148,482 Z"/></svg>`;
+
   async function loadMap(){
-    const sources = ["https://cdn.jsdelivr.net/npm/@svg-maps/india@2/india.svg","https://unpkg.com/@svg-maps/india@2/india.svg"];
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2-second timeout protection
+    const sources = ["https://cdn.jsdelivr.net/npm/@svg-maps/india@2/india.svg"];
     for(const url of sources){
       try{
-        const res = await fetch(url, {mode:'cors'});
+        const res = await fetch(url, {mode:'cors', signal: controller.signal});
+        clearTimeout(timeoutId);
         if(!res.ok) throw new Error('bad status');
         const text = await res.text();
         if(text.includes('<svg')){
@@ -201,15 +210,16 @@ function buildIndiaModule(){
           svg.removeAttribute('width'); svg.removeAttribute('height');
           if(!svg.getAttribute('viewBox')) svg.setAttribute('viewBox','0 0 1000 1000');
           svgRoot = svg; attachHandlers(svg); plotCapitalDots(svg);
-          if(regionPaths.length === 0) throw new Error('no regions');
-          return;
+          if(regionPaths.length > 0) return;
         }
-      }catch(e){ console.warn('India map source failed:', url, e.message); }
+      }catch(e){ /* Fall through immediately */ }
     }
+    // Fallback renders instantly without network
     holder.innerHTML = FALLBACK_SVG_INDIA;
     const svg = holder.querySelector('svg');
     svgRoot = svg; attachHandlers(svg); plotCapitalDots(svg);
   }
+
   function handleQuizAnswer(el, name){
     const isCorrect = (name === quizTarget.name);
     if(isCorrect){ el.classList.add('active'); activePath = el; qbar.textContent = "✅ Correct! That's " + name + '!'; speak('Yes! That is ' + name + '!'); confettiBurst(); setTimeout(nextQuizQuestion, 1700); }
@@ -232,7 +242,6 @@ function buildIndiaModule(){
   document.getElementById('modeExploreIN').addEventListener('click', ()=>setMode('explore'));
   document.getElementById('modeQuizStateIN').addEventListener('click', ()=>setMode('quizState'));
   document.getElementById('resetBtnIN').addEventListener('click', ()=>setMode('explore'));
-  document.getElementById('homeBtnIN').addEventListener('click', quitToQuizHome);
   document.getElementById('speakBtnIN').addEventListener('click', ()=>{
     const t = nameEl.textContent;
     if(t && t !== 'Tap a state to begin!'){ const info = INDIA_STATE_INFO[t]; if(info) speak(t + '. Capital: ' + info.capital + '. Chief Minister: ' + info.cm + '. Language: ' + info.language + '.'); else speak(t); }
@@ -243,6 +252,7 @@ function buildIndiaModule(){
     if(g) g.style.display = dotsVisible ? '' : 'none';
     ev.target.textContent = dotsVisible ? '🟡 Hide Capital Dots' : '🟡 Show Capital Dots';
   });
+
   loadMap();
 }
 
@@ -306,7 +316,6 @@ function buildWorldModule(){
   document.getElementById('modeQuizStateWO').addEventListener('click', ()=>setMode('quizState'));
   document.getElementById('modeQuizCapitalWO').addEventListener('click', ()=>setMode('quizCapital'));
   document.getElementById('resetBtnWO').addEventListener('click', ()=>setMode('explore'));
-  document.getElementById('homeBtnWO').addEventListener('click', quitToQuizHome);
   document.getElementById('speakBtnWO').addEventListener('click', ()=>{
     const t = nameEl.textContent;
     const capVisible = capRow.style.display !== 'none';
@@ -314,7 +323,10 @@ function buildWorldModule(){
   });
   async function init(){
     try{
-      const topoRes = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
+      const topoRes = await fetch("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json", { signal: controller.signal });
+      clearTimeout(timeoutId);
       if(!topoRes.ok) throw new Error('topo fetch failed');
       const worldTopo = await topoRes.json();
       const geo = topojson.feature(worldTopo, worldTopo.objects.countries);
@@ -336,7 +348,9 @@ function buildWorldModule(){
           this.addEventListener('click', handler);
           this.addEventListener('touchstart', handler, {passive:false});
         });
-    }catch(e){ console.error('World map init failed:', e.message); }
+    }catch(e){
+      holder.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:#555;"><h3>🌍 World Map (Offline Mode)</h3><p>Please connect to the internet to load full world topology.</p></div>';
+    }
   }
   init();
 }
@@ -358,7 +372,6 @@ function buildQuizModule(){
   const resultScreen = document.getElementById('quizResultScreen');
   const finalScore = document.getElementById('quizFinalScore');
   const finalMessage = document.getElementById('quizFinalMessage');
-  const bottomControls = document.getElementById('quizBottomControls');
 
   function clearTimers(){
     if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
@@ -371,16 +384,21 @@ function buildQuizModule(){
     wrap.style.display = 'none';
     resultScreen.style.display = 'none';
     picker.style.display = 'flex';
-    bottomControls.style.display = 'none';
   };
 
   function startTopic(topic){
+    if(topic === 'clock'){
+      // Switch directly to embedded clock quiz
+      document.getElementById('quizSingleContainer').style.display = 'none';
+      document.getElementById('quizClockContainer').style.display = 'flex';
+      window.startClockQuiz();
+      return;
+    }
     currentTopic = topic; score = 0; qIndex = 0;
     queue = shuffleArray(QUIZ_DATA[topic]).slice(0, roundLength);
     picker.style.display = 'none';
     wrap.style.display = 'flex';
     resultScreen.style.display = 'none';
-    bottomControls.style.display = 'flex';
     showQuestion();
   }
 
@@ -432,7 +450,7 @@ function buildQuizModule(){
       feedbackEl.style.color = '#c0392b';
       speak('Not quite. The correct answer is ' + correctText + '.');
 
-      // 10-second countdown delay for incorrect answer
+      // 10-second review countdown
       let secondsLeft = 10;
       timerInfoEl.style.display = 'inline-block';
       timerInfoEl.textContent = '⏳ Next question in ' + secondsLeft + 's…';
@@ -476,41 +494,79 @@ function buildQuizModule(){
   document.getElementById('quizPlayAgainBtn').addEventListener('click', ()=>{
     resultScreen.style.display = 'none';
     picker.style.display = 'flex';
-    bottomControls.style.display = 'none';
   });
-  document.getElementById('quizBackBtn').addEventListener('click', ()=>{
-    clearTimers();
-    wrap.style.display = 'none';
-    resultScreen.style.display = 'none';
-    picker.style.display = 'flex';
-    bottomControls.style.display = 'none';
-  });
-  document.getElementById('quizToHomeBtn').addEventListener('click', quitToQuizHome);
 }
 
-/* ===================== ARCADE (2-PLAYER) QUIZ MODULE ===================== */
-function buildArcadeModule(){
-  const TOPIC_LABELS = { mythology: "Mythology", sports: "Sports", animals: "Animals", history: "History", maths: "Maths", english: "English", science: "Science" };
-  let currentTopic = null, queue = [], qIndex = 0, scoreP1 = 0, scoreP2 = 0, roundLength = 10;
-  let answeredP1 = false, answeredP2 = false, p1Correct = false, p2Correct = false;
-  let timerInterval = null, advanceTimeout = null;
+/* ===================== CLOCK MODULE (INSIDE QUIZ TAB) ===================== */
+function buildClockModule(){
+  let qIndex = 0, score = 0, roundLength = 10, answered = false;
+  let currentTarget = null, timerInterval = null, advanceTimeout = null;
 
-  const picker = document.getElementById('arcadeTopicPicker');
-  const wrap = document.getElementById('arcadeWrap');
-  const resultWrap = document.getElementById('arcadeResultWrap');
-  const bottomControls = document.getElementById('arcadeBottomControls');
-  const progress = document.getElementById('arcadeProgress');
-  const emojiEl = document.getElementById('arcadeEmoji');
-  const questionText = document.getElementById('arcadeQuestionText');
-  const timerInfoEl = document.getElementById('arcadeTimerInfo');
-  const optsP1 = document.getElementById('arcadeOptionsP1');
-  const optsP2 = document.getElementById('arcadeOptionsP2');
-  const fbP1 = document.getElementById('arcadeFeedbackP1');
-  const fbP2 = document.getElementById('arcadeFeedbackP2');
-  const scoreP1El = document.getElementById('arcadeScoreP1');
-  const scoreP2El = document.getElementById('arcadeScoreP2');
-  const finalWinner = document.getElementById('arcadeFinalWinner');
-  const finalScores = document.getElementById('arcadeFinalScores');
+  const cx = 160, cy = 160;
+  const hourHand = document.getElementById('hourHand');
+  const minuteHand = document.getElementById('minuteHand');
+  const progressEl = document.getElementById('clockProgress');
+  const optionsEl = document.getElementById('clockOptions');
+  const feedbackEl = document.getElementById('clockFeedback');
+  const timerInfoEl = document.getElementById('clockTimerInfo');
+  const cardBody = document.getElementById('clockCardBody');
+  const resultScreen = document.getElementById('clockResultScreen');
+  const finalScoreEl = document.getElementById('clockFinalScore');
+  const finalMsgEl = document.getElementById('clockFinalMessage');
+
+  function drawClockFace(){
+    const ticksGroup = document.getElementById('clockTicks');
+    const outerGroup = document.getElementById('clockOuterMinutes');
+    const hoursGroup = document.getElementById('clockHourNumbers');
+    ticksGroup.innerHTML = ''; outerGroup.innerHTML = ''; hoursGroup.innerHTML = '';
+
+    for(let i = 1; i <= 12; i++){
+      const angle = (i * 30) * (Math.PI / 180);
+      
+      // Dial Tick
+      const x1 = cx + 120 * Math.sin(angle), y1 = cy - 120 * Math.cos(angle);
+      const x2 = cx + 110 * Math.sin(angle), y2 = cy - 110 * Math.cos(angle);
+      const tick = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      tick.setAttribute('x1', x1); tick.setAttribute('y1', y1);
+      tick.setAttribute('x2', x2); tick.setAttribute('y2', y2);
+      tick.setAttribute('class', 'clock-tick');
+      ticksGroup.appendChild(tick);
+
+      // Inner hour numbers (1 - 12)
+      const hx = cx + 92 * Math.sin(angle), hy = cy - 92 * Math.cos(angle);
+      const hText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      hText.setAttribute('x', hx); hText.setAttribute('y', hy);
+      hText.setAttribute('class', 'clock-hour-text');
+      hText.textContent = i;
+      hoursGroup.appendChild(hText);
+
+      // Outer minutes helper numbers (5, 10, 15... 55, 00)
+      const mx = cx + 134 * Math.sin(angle), my = cy - 134 * Math.cos(angle);
+      const mText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      mText.setAttribute('x', mx); mText.setAttribute('y', my);
+      mText.setAttribute('class', 'clock-min-text');
+      const minVal = (i * 5) % 60;
+      mText.textContent = minVal === 0 ? "00" : (minVal < 10 ? "0" + minVal : minVal);
+      outerGroup.appendChild(mText);
+    }
+  }
+
+  function setClockHands(hour, minute){
+    const minuteAngle = minute * 6;
+    const hourAngle = ((hour % 12) * 30) + (minute * 0.5);
+
+    const hLen = 55;
+    const mLen = 85;
+
+    const hRad = (hourAngle - 90) * (Math.PI / 180);
+    const mRad = (minuteAngle - 90) * (Math.PI / 180);
+
+    hourHand.setAttribute('x2', cx + hLen * Math.cos(hRad));
+    hourHand.setAttribute('y2', cy + hLen * Math.sin(hRad));
+
+    minuteHand.setAttribute('x2', cx + mLen * Math.cos(mRad));
+    minuteHand.setAttribute('y2', cy + mLen * Math.sin(mRad));
+  }
 
   function clearTimers(){
     if(timerInterval){ clearInterval(timerInterval); timerInterval = null; }
@@ -518,174 +574,72 @@ function buildArcadeModule(){
     timerInfoEl.style.display = 'none';
   }
 
-  window.arcadeQuizReset = function(){
+  window.clockQuizReset = function(){
     clearTimers();
-    wrap.style.display = 'none';
-    resultWrap.style.display = 'none';
-    picker.style.display = 'flex';
-    bottomControls.style.display = 'none';
+    cardBody.style.display = 'block';
+    resultScreen.style.display = 'none';
+    qIndex = 0; score = 0;
   };
 
-  function startTopic(topic){
-    currentTopic = topic; scoreP1 = 0; scoreP2 = 0; qIndex = 0;
-    queue = shuffleArray(QUIZ_DATA[topic]).slice(0, roundLength);
-    picker.style.display = 'none';
-    wrap.style.display = 'flex';
-    resultWrap.style.display = 'none';
-    bottomControls.style.display = 'flex';
-    updateScores();
+  window.startClockQuiz = function(){
+    window.clockQuizReset();
     showQuestion();
-  }
+  };
 
-  function updateScores(){
-    scoreP1El.textContent = '🔵 Player 1: ' + scoreP1;
-    scoreP2El.textContent = '🔴 Player 2: ' + scoreP2;
-  }
-
-  function renderOptionsFor(container, correctText, options, feedbackEl, onPick){
-    container.innerHTML = '';
-    const letters = ['A','B','C','D'];
-    const shuffled = shuffleArray(options);
-    shuffled.forEach((opt, idx)=>{
-      const btn = document.createElement('button');
-      btn.className = 'ctrl arcadeOptBtn';
-      btn.style.background = '#4c6ef5';
-      btn.textContent = letters[idx] + '. ' + opt;
-      btn.addEventListener('click', ()=> onPick(opt === correctText, opt, btn, container, feedbackEl));
-      container.appendChild(btn);
-    });
+  function generateTimeQuestion(){
+    const hours = Math.floor(Math.random() * 12) + 1;
+    const possibleMinutes = [0, 15, 30, 45, 10, 20, 50];
+    const minutes = possibleMinutes[Math.floor(Math.random() * possibleMinutes.length)];
+    const formatTime = (h, m) => `${h}:${m < 10 ? '0' + m : m}`;
+    
+    const correctStr = formatTime(hours, minutes);
+    const distractors = new Set();
+    while(distractors.size < 3){
+      const dh = Math.floor(Math.random() * 12) + 1;
+      const dm = possibleMinutes[Math.floor(Math.random() * possibleMinutes.length)];
+      const ds = formatTime(dh, dm);
+      if(ds !== correctStr) distractors.add(ds);
+    }
+    const options = shuffleArray([correctStr, ...Array.from(distractors)]);
+    return { hour: hours, minute: minutes, correctText: correctStr, options };
   }
 
   function showQuestion(){
     clearTimers();
-    answeredP1 = false; answeredP2 = false; p1Correct = false; p2Correct = false;
-    const q = queue[qIndex];
-    progress.textContent = TOPIC_LABELS[currentTopic] + ' — Question ' + (qIndex+1) + ' of ' + queue.length;
-    emojiEl.textContent = q.emoji || '❓';
-    questionText.textContent = q.q;
-    fbP1.textContent = ''; fbP2.textContent = '';
-    const correctText = q.options[q.answer];
+    answered = false;
+    cardBody.style.display = 'block';
+    resultScreen.style.display = 'none';
 
-    renderOptionsFor(optsP1, correctText, q.options, fbP1, (isCorrect, chosen, btn, container)=>{
-      if(answeredP1) return; answeredP1 = true; p1Correct = isCorrect;
-      Array.from(container.children).forEach(b=>b.disabled = true);
-      if(isCorrect){ scoreP1++; btn.style.background = '#2a9d8f'; fbP1.textContent = '✅ Correct!'; fbP1.style.color = '#2a9d8f'; confettiBurst(); }
-      else { btn.style.background = '#c0392b'; Array.from(container.children).forEach(b=>{ if(b.textContent.slice(3) === correctText) b.style.background = '#2a9d8f'; }); fbP1.textContent = '❌ Correct: ' + correctText; fbP1.style.color = '#c0392b'; }
-      updateScores();
-      checkBothAnswered();
-    });
-    renderOptionsFor(optsP2, correctText, q.options, fbP2, (isCorrect, chosen, btn, container)=>{
-      if(answeredP2) return; answeredP2 = true; p2Correct = isCorrect;
-      Array.from(container.children).forEach(b=>b.disabled = true);
-      if(isCorrect){ scoreP2++; btn.style.background = '#2a9d8f'; fbP2.textContent = '✅ Correct!'; fbP2.style.color = '#2a9d8f'; confettiBurst(); }
-      else { btn.style.background = '#c0392b'; Array.from(container.children).forEach(b=>{ if(b.textContent.slice(3) === correctText) b.style.background = '#2a9d8f'; }); fbP2.textContent = '❌ Correct: ' + correctText; fbP2.style.color = '#c0392b'; }
-      updateScores();
-      checkBothAnswered();
+    currentTarget = generateTimeQuestion();
+    setClockHands(currentTarget.hour, currentTarget.minute);
+
+    progressEl.textContent = `Clock Quiz — Question ${qIndex + 1} of ${roundLength} (Score: ${score})`;
+    feedbackEl.textContent = '';
+    optionsEl.innerHTML = '';
+
+    const letters = ['A', 'B', 'C', 'D'];
+    currentTarget.options.forEach((opt, idx)=>{
+      const btn = document.createElement('button');
+      btn.className = 'ctrl';
+      btn.style.background = '#4c6ef5';
+      btn.style.width = '100%';
+      btn.textContent = `${letters[idx]}. ${opt}`;
+      btn.addEventListener('click', ()=> onAnswer(opt === currentTarget.correctText, opt, btn));
+      optionsEl.appendChild(btn);
     });
 
-    speak(q.q);
+    speak(`What time is the clock showing?`);
   }
 
-  function checkBothAnswered(){
-    if(answeredP1 && answeredP2){
-      const anyWrong = (!p1Correct || !p2Correct);
-      if(anyWrong){
-        let secondsLeft = 10;
-        timerInfoEl.style.display = 'inline-block';
-        timerInfoEl.textContent = '⏳ Reviewing answer… next in ' + secondsLeft + 's';
+  function onAnswer(isCorrect, chosenText, btnEl){
+    if(answered) return;
+    answered = true;
+    const allButtons = optionsEl.querySelectorAll('button');
+    allButtons.forEach(b => b.disabled = true);
 
-        timerInterval = setInterval(()=>{
-          secondsLeft--;
-          if(secondsLeft > 0){
-            timerInfoEl.textContent = '⏳ Reviewing answer… next in ' + secondsLeft + 's';
-          } else {
-            clearTimers();
-          }
-        }, 1000);
-
-        advanceTimeout = setTimeout(()=>{
-          clearTimers();
-          qIndex++;
-          if(qIndex < queue.length){ showQuestion(); } else { showResult(); }
-        }, 10000);
-      } else {
-        advanceTimeout = setTimeout(()=>{
-          qIndex++;
-          if(qIndex < queue.length){ showQuestion(); } else { showResult(); }
-        }, 1600);
-      }
-    }
-  }
-
-  function showResult(){
-    clearTimers();
-    wrap.style.display = 'none';
-    resultWrap.style.display = 'flex';
-    if(scoreP1 > scoreP2){ finalWinner.textContent = '🏆 Player 1 Wins! 🔵'; speak('Player 1 wins!'); }
-    else if(scoreP2 > scoreP1){ finalWinner.textContent = '🏆 Player 2 Wins! 🔴'; speak('Player 2 wins!'); }
-    else { finalWinner.textContent = "🤝 It's a Tie!"; speak("It's a tie!"); }
-    finalScores.textContent = 'Player 1: ' + scoreP1 + '  |  Player 2: ' + scoreP2 + '  (out of ' + queue.length + ')';
-    confettiBurst();
-  }
-
-  document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(btn=>{
-    btn.addEventListener('click', ()=> startTopic(btn.getAttribute('data-topic')));
-  });
-  document.getElementById('arcadePlayAgainBtn').addEventListener('click', ()=>{
-    resultWrap.style.display = 'none';
-    picker.style.display = 'flex';
-    bottomControls.style.display = 'none';
-  });
-  document.getElementById('arcadeBackBtn').addEventListener('click', ()=>{
-    clearTimers();
-    wrap.style.display = 'none';
-    resultWrap.style.display = 'none';
-    picker.style.display = 'flex';
-    bottomControls.style.display = 'none';
-  });
-  document.getElementById('arcadeToHomeBtn').addEventListener('click', quitToQuizHome);
-}
-
-/* ===================== QUIZ TOP-LEVEL MODE SWITCH ===================== */
-function setupQuizModeSwitch(){
-  const mainPicker = document.getElementById('quizMainModePicker');
-  const singleContainer = document.getElementById('quizSingleContainer');
-  const arcadeContainer = document.getElementById('arcadeContainer');
-  const headerSub = document.getElementById('quizHeaderSub');
-
-  document.getElementById('pickSingleMode').addEventListener('click', ()=>{
-    mainPicker.style.display = 'none';
-    singleContainer.style.display = 'flex';
-    arcadeContainer.style.display = 'none';
-    headerSub.textContent = 'Pick a topic and answer 10 fun questions!';
-  });
-  document.getElementById('pickArcadeMode').addEventListener('click', ()=>{
-    mainPicker.style.display = 'none';
-    arcadeContainer.style.display = 'flex';
-    singleContainer.style.display = 'none';
-    headerSub.textContent = 'Two players, one question each round — good luck!';
-  });
-  document.getElementById('quizToMainModeBtn1').addEventListener('click', quitToQuizHome);
-  document.getElementById('quizToMainModeBtn2').addEventListener('click', quitToQuizHome);
-}
-
-/* ===================== BOOTSTRAP ===================== */
-buildIndiaModule();
-buildWorldModule();
-buildQuizModule();
-buildArcadeModule();
-setupQuizModeSwitch();
-
-function showPage(pageKey){
-  const pages = { india: 'pageIndiaEl', world: 'pageWorldEl', quiz: 'pageQuizEl' };
-  const navs = { india: 'navIndia', world: 'navWorld', quiz: 'navQuiz' };
-  const bodyClasses = { india: 'page-india', world: 'page-world', quiz: 'page-quiz' };
-  Object.keys(pages).forEach(key=>{
-    document.getElementById(pages[key]).classList.toggle('visible', key === pageKey);
-    document.getElementById(navs[key]).classList.toggle('active', key === pageKey);
-    document.body.classList.toggle(bodyClasses[key], key === pageKey);
-  });
-}
-document.getElementById('navIndia').addEventListener('click', ()=>showPage('india'));
-document.getElementById('navWorld').addEventListener('click', ()=>showPage('world'));
-document.getElementById('navQuiz').addEventListener('click', ()=>showPage('quiz'));
+    if(isCorrect){
+      score++;
+      btnEl.style.bac	kground = '#2a9d8f';
+      feedbackEl.textContent = '✅ Correct! Brilliant time-telling!';
+      feedbackEl.style.color = '#2a9d8f';
+      speak(
