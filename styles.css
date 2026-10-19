@@ -67,14 +67,6 @@ header h1 { margin: 0; font-size: clamp(19px, 4.2vw, 28px); text-shadow: 1px 2px
 .page-quiz header h1 { color: #9b287b; }
 header p { margin: 3px 0 0; color: #34495e; font-size: clamp(12px, 2.4vw, 15px); font-weight: 600; }
 
-.excelUploadBadge {
-  display: inline-block; background: #27ae60; color: #fff; font-size: 13px; font-weight: bold;
-  padding: 6px 14px; border-radius: 20px; cursor: pointer; box-shadow: 0 3px 8px rgba(39,174,96,0.3);
-  border: none; font-family: inherit; transition: transform 0.15s ease;
-}
-.excelUploadBadge.btn-export { background: #2980b9; box-shadow: 0 3px 8px rgba(41,128,185,0.3); }
-.excelUploadBadge:hover { transform: translateY(-1px); }
-
 .cardHeaderRow {
   display: flex; justify-content: space-between; align-items: center;
   margin-bottom: 8px; width: 100%; max-width: 540px;

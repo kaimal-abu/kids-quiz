@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>India, World & Quiz for Kids</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -11,7 +12,6 @@
 </head>
 <body class="page-india">
 
-<!-- Playful Visual Background Layer -->
 <div class="bg-decorations" aria-hidden="true">
   <div class="deco-cloud cloud-1">☁️</div>
   <div class="deco-cloud cloud-2">☁️</div>
@@ -47,7 +47,7 @@
     </div>
   </div>
   <div class="quizBar" id="quizBarIN"></div>
-  <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderIN"><div class="loading"><span class="spinner">🗺️</span><span>Loading official India map…</span></div></div></div>
+  <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderIN"><div class="loading"><span class="spinner">🗺️</span><span>Loading India map…</span></div></div></div>
   <div class="controls">
     <button class="ctrl btn-home" onclick="quitToQuizHome()">🏠 Home</button>
     <button class="ctrl btn-secondary" id="speakBtnIN">🔊 Say it again</button>
@@ -89,19 +89,14 @@
   <header>
     <h1>🧠 Fun Quiz Time! 🧠</h1>
     <p id="quizHeaderSub">Choose how you want to play!</p>
-    <div style="margin-top:8px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-      <button class="excelUploadBadge btn-export" onclick="downloadQuizBankExcel()">📥 Download Quiz Bank.xlsx</button>
-      <label class="excelUploadBadge" for="excelFileInput">📂 Load Edited Excel File <span id="excelStatus">(Active: 400 Qs/Tab)</span></label>
-      <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="display:none;">
-    </div>
   </header>
 
   <!-- Quiz Modes Selector -->
   <div id="quizMainModePicker" class="quizModePicker">
     <div class="quizModeCard single" id="pickSingleMode">
       <div class="modeIcon">🙋</div>
-      <div class="modeTitle">Single Player Adventure</div>
-      <div class="modeDesc">Answer 400 questions per tab with Previous & Next navigation!</div>
+      <div class="modeTitle">Single Player Mode</div>
+      <div class="modeDesc">Explore topics with Previous & Next navigation buttons!</div>
     </div>
     <div class="quizModeCard arcade" id="pickArcadeMode">
       <div class="modeIcon">🕹️</div>
@@ -241,4 +236,6 @@
 
 <script src="questions.js"></script>
 </body>
+
+
 </html>
