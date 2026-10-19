@@ -1,4 +1,3 @@
-
 /* Quiz data loaded dynamically from Quiz-Bank.xlsx */
 let QUIZ_DATA = {};
 
@@ -20,8 +19,14 @@ async function loadQuizDataFromExcel() {
         const q = String(row['Question'] ?? '')
           .replace(/^\s*\[Q\d+\]\s*/i, '')
           .trim();
-        const opts = [row['Option 1'], row['Option 2'], row['Option 3'], row['Option 4']].filter(o => o !== '');
-        const correct = row['Correct answer'];
+
+        // Convert options to trimmed strings so numbers (like in Maths) render correctly
+        const opts = [row['Option 1'], row['Option 2'], row['Option 3'], row['Option 4']]
+          .map(o => String(o ?? '').trim())
+          .filter(o => o !== '');
+
+        const correct = String(row['Correct answer'] ?? '').trim();
+
         if (!q || opts.length < 2 || !correct) return;
         const shuffled = shuffleArray(opts);
         bank.push({
@@ -34,24 +39,11 @@ async function loadQuizDataFromExcel() {
       });
       QUIZ_DATA[sheetName.toLowerCase()] = bank;
     });
-    console.log('Quiz data loaded successfully.');
+    console.log('Quiz data loaded from Excel:', Object.keys(QUIZ_DATA).map(k => k + ': ' + QUIZ_DATA[k].length + ' questions'));
   } catch (err) {
     console.warn('Could not load Quiz-Bank.xlsx:', err.message);
   }
 }
-
-async function startApp() {
-  // Initialize maps first so they display immediately
-  try { buildIndiaModule(); } catch(e) { console.error('India map error:', e); }
-  try { buildWorldModule(); } catch(e) { console.error('World map error:', e); }
-
-  // Load quiz data and quiz module independently
-  await loadQuizDataFromExcel();
-  if (typeof buildQuizModule === 'function') {
-    try { buildQuizModule(); } catch(e) { console.error('Quiz module error:', e); }
-  }
-}
-startApp();
 
 /* ===================== MAPS DATA ===================== */
 const STATE_NAMES = {
@@ -155,6 +147,30 @@ function shuffleArray(arr){
   }
   return a;
 }
+
+function showPage(page){
+  document.querySelectorAll('.app-page').forEach(p => p.classList.remove('visible'));
+  document.querySelectorAll('.pageNavBtn').forEach(b => b.classList.remove('active'));
+
+  if(page === 'india'){
+    document.getElementById('pageIndiaEl')?.classList.add('visible');
+    document.getElementById('navIndia')?.classList.add('active');
+    document.body.className = 'page-india';
+  } else if(page === 'world'){
+    document.getElementById('pageWorldEl')?.classList.add('visible');
+    document.getElementById('navWorld')?.classList.add('active');
+    document.body.className = 'page-world';
+  } else if(page === 'quiz'){
+    document.getElementById('pageQuizEl')?.classList.add('visible');
+    document.getElementById('navQuiz')?.classList.add('active');
+    document.body.className = 'page-quiz';
+  }
+}
+
+document.getElementById('navIndia')?.addEventListener('click', () => showPage('india'));
+document.getElementById('navWorld')?.addEventListener('click', () => showPage('world'));
+document.getElementById('navQuiz')?.addEventListener('click', () => showPage('quiz'));
+document.getElementById('globalHomeBtn')?.addEventListener('click', () => quitToQuizHome());
 
 function quitToQuizHome(){
   try { if('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e){}
@@ -442,7 +458,411 @@ function buildWorldModule(){
   init();
 }
 
-
 /* ===================== CLOCK GRAPHIC RENDERER ===================== */
 function setupClockSVG(svgId, ticksId, outerMinId, hoursId){
-  const cx = 160,
+  const cx = 160, cy = 160;
+  const tickGroup = document.getElementById(ticksId);
+  const minGroup = document.getElementById(outerMinId);
+  const hourGroup = document.getElementById(hoursId);
+
+  if(!tickGroup || !minGroup || !hourGroup) return;
+
+  tickGroup.innerHTML = '';
+  minGroup.innerHTML = '';
+  hourGroup.innerHTML = '';
+
+  for(let i = 0; i < 60; i++){
+    const angle = (i * 6) * (Math.PI / 180);
+    const isHour = i % 5 === 0;
+    const rInner = isHour ? 104 : 110;
+    const rOuter = 118;
+
+    const x1 = cx + rInner * Math.sin(angle);
+    const y1 = cy - rInner * Math.cos(angle);
+    const x2 = cx + rOuter * Math.sin(angle);
+    const y2 = cy - rOuter * Math.cos(angle);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('class', 'clock-tick');
+    if(!isHour){
+      line.style.strokeWidth = '1.5';
+      line.style.opacity = '0.5';
+    }
+    tickGroup.appendChild(line);
+  }
+
+  for(let m = 5; m <= 60; m += 5){
+    const angle = (m * 6) * (Math.PI / 180);
+    const rText = 134;
+    const x = cx + rText * Math.sin(angle);
+    const y = cy - rText * Math.cos(angle);
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', x);
+    txt.setAttribute('y', y);
+    txt.setAttribute('class', 'clock-min-text');
+    txt.textContent = m === 60 ? '00' : m.toString();
+    minGroup.appendChild(txt);
+  }
+
+  for(let h = 1; h <= 12; h++){
+    const angle = (h * 30) * (Math.PI / 180);
+    const rText = 84;
+    const x = cx + rText * Math.sin(angle);
+    const y = cy - rText * Math.cos(angle);
+
+    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    txt.setAttribute('x', x);
+    txt.setAttribute('y', y);
+    txt.setAttribute('class', 'clock-hour-text');
+    txt.textContent = h.toString();
+    hourGroup.appendChild(txt);
+  }
+}
+
+function updateClockHands(hourHandId, minuteHandId, hours, minutes){
+  const cx = 160, cy = 160;
+  const hourAngle = ((hours % 12) * 30 + minutes * 0.5) * (Math.PI / 180);
+  const minAngle = (minutes * 6) * (Math.PI / 180);
+
+  const hourHand = document.getElementById(hourHandId);
+  const minHand = document.getElementById(minuteHandId);
+
+  if(hourHand){
+    const x2 = cx + 55 * Math.sin(hourAngle);
+    const y2 = cy - 55 * Math.cos(hourAngle);
+    hourHand.setAttribute('x2', x2);
+    hourHand.setAttribute('y2', y2);
+  }
+
+  if(minHand){
+    const x2 = cx + 88 * Math.sin(minAngle);
+    const y2 = cy - 88 * Math.cos(minAngle);
+    minHand.setAttribute('x2', x2);
+    minHand.setAttribute('y2', y2);
+  }
+}
+
+function extractTimeFromText(text){
+  const match = text.match(/\b(1[0-2]|0?[1-9]):([0-5][0-9])\b/);
+  if(match){
+    return { h: parseInt(match[1], 10), m: parseInt(match[2], 10) };
+  }
+  const oclockMatch = text.match(/\b(1[0-2]|0?[1-9])\s*o'?clock\b/i);
+  if(oclockMatch){
+    return { h: parseInt(oclockMatch[1], 10), m: 0 };
+  }
+  return null;
+}
+
+/* ===================== QUIZ MODULE (Single & 2-Player Arcade) ===================== */
+function buildQuizModule(){
+  setupClockSVG('clockSvg', 'clockTicks', 'clockOuterMinutes', 'clockHourNumbers');
+  setupClockSVG('arcadeClockSvg', 'arcadeClockTicks', 'arcadeClockOuterMinutes', 'arcadeClockHourNumbers');
+
+  let currentTopic = '';
+  let singleQuestions = [];
+  let singleIndex = 0;
+  let singleScore = 0;
+
+  let arcadeQuestions = [];
+  let arcadeIndex = 0;
+  let scoreP1 = 0;
+  let scoreP2 = 0;
+  let answeredP1 = false;
+  let answeredP2 = false;
+
+  const mainPicker = document.getElementById('quizMainModePicker');
+  const singleContainer = document.getElementById('quizSingleContainer');
+  const arcadeContainer = document.getElementById('arcadeContainer');
+
+  const quizSingleTopicPicker = document.getElementById('quizTopicPicker');
+  const quizWrap = document.getElementById('quizWrap');
+  const quizResultScreen = document.getElementById('quizResultScreen');
+  const clockVisualWrap = document.getElementById('clockVisualWrap');
+
+  const arcadeTopicPicker = document.getElementById('arcadeTopicPicker');
+  const arcadeWrap = document.getElementById('arcadeWrap');
+  const arcadeResultWrap = document.getElementById('arcadeResultWrap');
+  const arcadeClockVisualWrap = document.getElementById('arcadeClockVisualWrap');
+
+  // Mode Selection
+  document.getElementById('pickSingleMode')?.addEventListener('click', () => {
+    mainPicker.style.display = 'none';
+    singleContainer.style.display = 'flex';
+  });
+
+  document.getElementById('pickArcadeMode')?.addEventListener('click', () => {
+    mainPicker.style.display = 'none';
+    arcadeContainer.style.display = 'flex';
+  });
+
+  // Single Player Topic Picker
+  document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTopic = btn.dataset.topic;
+      startSingleQuiz(currentTopic);
+    });
+  });
+
+  function startSingleQuiz(topic){
+    singleQuestions = QUIZ_DATA[topic] || [];
+    if(!singleQuestions.length){
+      alert('No questions found for this topic!');
+      return;
+    }
+    singleIndex = 0;
+    singleScore = 0;
+    quizSingleTopicPicker.style.display = 'none';
+    quizResultScreen.style.display = 'none';
+    quizWrap.style.display = 'flex';
+    renderSingleQuestion();
+  }
+
+  function renderSingleQuestion(){
+    const q = singleQuestions[singleIndex];
+    document.getElementById('quizProgress').textContent = `Question ${singleIndex + 1} of ${singleQuestions.length}`;
+    document.getElementById('quizQuestionText').textContent = q.q;
+    document.getElementById('quizFeedback').textContent = '';
+
+    // In Time questions, the correct answer holds the time (e.g., 1:00, 3:45)
+    const timeData = extractTimeFromText(q.correctText + ' ' + q.q);
+    if(currentTopic === 'time' && timeData){
+      clockVisualWrap.style.display = 'flex';
+      updateClockHands('hourHand', 'minuteHand', timeData.h, timeData.m);
+    } else {
+      clockVisualWrap.style.display = 'none';
+    }
+
+    const optsContainer = document.getElementById('quizOptions');
+    optsContainer.innerHTML = '';
+
+    q.options.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quizOptBtn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => handleSingleAnswer(opt, q.correctText, btn));
+      optsContainer.appendChild(btn);
+    });
+
+    document.getElementById('quizPrevBtn').disabled = singleIndex === 0;
+    document.getElementById('quizNextBtn').disabled = true;
+  }
+
+  function handleSingleAnswer(selected, correct, selectedBtn){
+    const fb = document.getElementById('quizFeedback');
+    document.querySelectorAll('#quizOptions .quizOptBtn').forEach(b => b.disabled = true);
+
+    if(String(selected).trim().toLowerCase() === String(correct).trim().toLowerCase()){
+      selectedBtn.classList.add('correct');
+      fb.textContent = '🎉 Correct!';
+      fb.style.color = '#27ae60';
+      singleScore++;
+      confettiBurst();
+    } else {
+      selectedBtn.classList.add('wrong');
+      // Highlight the correct one
+      document.querySelectorAll('#quizOptions .quizOptBtn').forEach(b => {
+        if(b.textContent.trim().toLowerCase() === String(correct).trim().toLowerCase()){
+          b.classList.add('correct');
+        }
+      });
+      fb.textContent = `❌ Oops! The correct answer is: ${correct}`;
+      fb.style.color = '#e74c3c';
+    }
+    document.getElementById('quizNextBtn').disabled = false;
+  }
+
+  document.getElementById('quizNextBtn')?.addEventListener('click', () => {
+    singleIndex++;
+    if(singleIndex < singleQuestions.length){
+      renderSingleQuestion();
+    } else {
+      showSingleResults();
+    }
+  });
+
+  document.getElementById('quizPrevBtn')?.addEventListener('click', () => {
+    if(singleIndex > 0){
+      singleIndex--;
+      renderSingleQuestion();
+    }
+  });
+
+  function showSingleResults(){
+    quizWrap.style.display = 'none';
+    quizResultScreen.style.display = 'flex';
+    document.getElementById('quizFinalScore').textContent = `Score: ${singleScore} / ${singleQuestions.length}`;
+    document.getElementById('quizFinalMessage').textContent =
+      singleScore === singleQuestions.length ? '🌟 Outstanding work!' : '👍 Great effort! Play again to improve!';
+  }
+
+  document.getElementById('quizPlayAgainBtn')?.addEventListener('click', () => {
+    startSingleQuiz(currentTopic);
+  });
+
+  window.singleQuizReset = () => {
+    quizWrap.style.display = 'none';
+    quizResultScreen.style.display = 'none';
+    quizSingleTopicPicker.style.display = 'flex';
+    document.querySelectorAll('#quizTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
+  };
+
+  // Arcade (2-Player) Topic Picker
+  document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentTopic = btn.dataset.topic;
+      startArcadeQuiz(currentTopic);
+    });
+  });
+
+  function startArcadeQuiz(topic){
+    arcadeQuestions = QUIZ_DATA[topic] || [];
+    if(!arcadeQuestions.length){
+      alert('No questions found for this topic!');
+      return;
+    }
+    arcadeIndex = 0;
+    scoreP1 = 0;
+    scoreP2 = 0;
+    arcadeTopicPicker.style.display = 'none';
+    arcadeResultWrap.style.display = 'none';
+    arcadeWrap.style.display = 'flex';
+    renderArcadeQuestion();
+  }
+
+  function renderArcadeQuestion(){
+    const q = arcadeQuestions[arcadeIndex];
+    answeredP1 = false;
+    answeredP2 = false;
+
+    document.getElementById('arcadeScoreP1').textContent = `🔵 P1: ${scoreP1}`;
+    document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scoreP2}`;
+    document.getElementById('arcadeProgress').textContent = `Question ${arcadeIndex + 1} of ${arcadeQuestions.length}`;
+    document.getElementById('arcadeQuestionText').textContent = q.q;
+
+    document.getElementById('arcadeFeedbackP1').textContent = '';
+    document.getElementById('arcadeFeedbackP2').textContent = '';
+
+    const timeData = extractTimeFromText(q.correctText + ' ' + q.q);
+    if(currentTopic === 'time' && timeData){
+      arcadeClockVisualWrap.style.display = 'flex';
+      updateClockHands('arcadeHourHand', 'arcadeMinuteHand', timeData.h, timeData.m);
+    } else {
+      arcadeClockVisualWrap.style.display = 'none';
+    }
+
+    renderArcadeOptions('arcadeOptionsP1', q, 1);
+    renderArcadeOptions('arcadeOptionsP2', q, 2);
+
+    document.getElementById('arcadeNextBtn').disabled = true;
+  }
+
+  function renderArcadeOptions(containerId, q, playerNum){
+    const container = document.getElementById(containerId);
+    container.innerHTML = '';
+    const shuffledOpts = shuffleArray(q.options);
+
+    shuffledOpts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'quizOptBtn arcadeOptBtn';
+      btn.textContent = opt;
+      btn.addEventListener('click', () => handleArcadeAnswer(playerNum, opt, q.correctText, btn));
+      container.appendChild(btn);
+    });
+  }
+
+  function handleArcadeAnswer(playerNum, selected, correct, selectedBtn){
+    const fb = document.getElementById(`arcadeFeedbackP${playerNum}`);
+    const panelBtns = document.querySelectorAll(`#arcadeOptionsP${playerNum} .arcadeOptBtn`);
+    panelBtns.forEach(b => b.disabled = true);
+
+    if(playerNum === 1) answeredP1 = true;
+    if(playerNum === 2) answeredP2 = true;
+
+    if(String(selected).trim().toLowerCase() === String(correct).trim().toLowerCase()){
+      selectedBtn.classList.add('correct');
+      fb.textContent = '✅ Got it!';
+      fb.style.color = '#27ae60';
+      if(playerNum === 1) scoreP1++;
+      if(playerNum === 2) scoreP2++;
+      confettiBurst();
+    } else {
+      selectedBtn.classList.add('wrong');
+      panelBtns.forEach(b => {
+        if(b.textContent.trim().toLowerCase() === String(correct).trim().toLowerCase()){
+          b.classList.add('correct');
+        }
+      });
+      fb.textContent = `❌ Nope!`;
+      fb.style.color = '#e74c3c';
+    }
+
+    document.getElementById('arcadeScoreP1').textContent = `🔵 P1: ${scoreP1}`;
+    document.getElementById('arcadeScoreP2').textContent = `🔴 P2: ${scoreP2}`;
+
+    if(answeredP1 && answeredP2){
+      document.getElementById('arcadeNextBtn').disabled = false;
+    }
+  }
+
+  document.getElementById('arcadeNextBtn')?.addEventListener('click', () => {
+    arcadeIndex++;
+    if(arcadeIndex < arcadeQuestions.length){
+      renderArcadeQuestion();
+    } else {
+      showArcadeResults();
+    }
+  });
+
+  function showArcadeResults(){
+    arcadeWrap.style.display = 'none';
+    arcadeResultWrap.style.display = 'flex';
+
+    let winnerMsg = "It's a Tie! 🤝";
+    if(scoreP1 > scoreP2) winnerMsg = '🎉 Player 1 Wins! 🔵';
+    if(scoreP2 > scoreP1) winnerMsg = '🎉 Player 2 Wins! 🔴';
+
+    document.getElementById('arcadeFinalWinner').textContent = winnerMsg;
+    document.getElementById('arcadeFinalScores').textContent = `P1 Score: ${scoreP1}  |  P2 Score: ${scoreP2}`;
+  }
+
+  document.getElementById('arcadePlayAgainBtn')?.addEventListener('click', () => {
+    startArcadeQuiz(currentTopic);
+  });
+
+  window.arcadeQuizReset = () => {
+    arcadeWrap.style.display = 'none';
+    arcadeResultWrap.style.display = 'none';
+    arcadeTopicPicker.style.display = 'flex';
+    document.querySelectorAll('#arcadeTopicPicker .topicBtn').forEach(b => b.classList.remove('active'));
+  };
+}
+
+/* ===================== APP STARTUP ===================== */
+async function startApp(){
+  try { buildIndiaModule(); } catch(e){ console.error('India map error:', e); }
+  try { buildWorldModule(); } catch(e){ console.error('World map error:', e); }
+
+  try {
+    await loadQuizDataFromExcel();
+  } catch(e){
+    console.warn('Excel load error:', e);
+  }
+
+  try {
+    buildQuizModule();
+  } catch(e){
+    console.error('Quiz module error:', e);
+  }
+}
+
+startApp();

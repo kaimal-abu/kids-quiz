@@ -136,7 +136,38 @@ button.ctrl:disabled { opacity: 0.55; cursor: not-allowed; }
 .modeBtn.active { background: #4c6ef5; color: #fff; box-shadow: 0 4px 12px rgba(76,110,245,0.3); }
 .topicBtn { border-color: #a6337a; color: #a6337a; font-size: clamp(12px, 2.4vw, 14px); padding: 8px 16px; }
 .topicBtn.active { background: #a6337a; color: #fff; box-shadow: 0 4px 12px rgba(166,51,122,0.3); }
-.quizOptBtn { width: 100%; text-align: left; padding: 11px 16px; border-radius: 16px; font-size: clamp(13px, 2.6vw, 16px); }
+.quizOptBtn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 18px;
+  border-radius: 16px;
+  font-size: clamp(14px, 2.6vw, 17px);
+  color: #2c3e50 !important;              /* Fixes invisible white text */
+  background: #ffffff !important;
+  border: 2px solid #bdc3c7 !important;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.quizOptBtn:hover:not(:disabled) {
+  border-color: #4c6ef5 !important;
+  background: #f0f4ff !important;
+  color: #1d3557 !important;
+  transform: translateY(-2px);
+}
+
+.quizOptBtn.correct {
+  background: #27ae60 !important;
+  color: #ffffff !important;
+  border-color: #1e8449 !important;
+}
+
+.quizOptBtn.wrong {
+  background: #e74c3c !important;
+  color: #ffffff !important;
+  border-color: #c0392b !important;
+} }
 
 .quizModePicker { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 16px; padding: 10px 20px; }
 .quizModeCard { background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-radius: 22px; padding: 20px 26px; max-width: 440px; width: 100%; box-shadow: 0 8px 24px rgba(0,0,0,0.1); text-align: center; cursor: pointer; border: 4px solid transparent; transition: all 0.16s ease; }
@@ -180,3 +211,46 @@ button.ctrl:disabled { opacity: 0.55; cursor: not-allowed; }
 .confetti { position: fixed; pointer-events: none; inset: 0; overflow: hidden; z-index: 50; }
 .confetti-piece { position: absolute; top: -10px; font-size: 22px; animation: fall linear forwards; }
 @keyframes fall { to { transform: translateY(110vh) rotate(360deg); opacity: 0.2; } }
+
+/* Allow page and quiz container to scroll when content exceeds viewport */
+html, body {
+  overflow-y: auto !important;
+}
+
+.app-page {
+  min-height: 100%;
+  height: auto;
+}
+
+#quizSingleContainer, #arcadeContainer {
+  overflow-y: auto !important;
+  max-height: 100%;
+}
+
+#quizWrap {
+  justify-content: flex-start !important; /* Prevents card from centering off-screen */
+  padding: 10px 12px 30px !important;     /* Leaves comfortable breathing room at the bottom */
+}
+
+/* Reduce clock SVG size on small/medium screens */
+#clockSvg {
+  width: 170px !important;
+  height: 170px !important;
+}
+
+#arcadeClockSvg {
+  width: 150px !important;
+  height: 150px !important;
+}
+
+/* Compact spacing inside question card */
+#quizQuestionCard {
+  padding: 14px 18px !important;
+  margin-bottom: 24px;
+}
+
+.quizNavRow {
+  margin-top: 12px;
+  position: relative;
+  z-index: 5;
+}
