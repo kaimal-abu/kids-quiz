@@ -3,37 +3,55 @@
 let QUIZ_DATA = {};
 
 async function loadQuizDataFromExcel() {
-  const res = await fetch('Quiz-Bank.xlsx');
-  const arrayBuffer = await res.arrayBuffer();
-  const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+  try {
+    const res = await fetch('Quiz-Bank.xlsx');
+    if (!res.ok) {
+      throw new Error(`Failed to fetch Quiz-Bank.xlsx: ${res.status} ${res.statusText}`);
+    }
+    const arrayBuffer = await res.arrayBuffer();
+    const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
-  QUIZ_DATA = {};
-  workbook.SheetNames.forEach(sheetName => {
-    const sheet = workbook.Sheets[sheetName];
-    const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
-    const bank = [];
-    rows.forEach(row => {
-      //const q = row['Question'];
-      const q = String(row['Question'] ?? '')
-  	.replace(/^\s*\[Q\d+\]\s*/i, '')
-  	.trim();
-      const opts = [row['Option 1'], row['Option 2'], row['Option 3'], row['Option 4']].filter(o => o !== '');
-      const correct = row['Correct answer'];
-      if (!q || opts.length < 2 || !correct) return;
-      const shuffled = shuffleArray(opts);
-      bank.push({
-        q: q,
-        options: shuffled,
-        correctText: correct,
-        emoji: '',
-        answer: shuffled.indexOf(correct)
+    QUIZ_DATA = {};
+    workbook.SheetNames.forEach(sheetName => {
+      const sheet = workbook.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+      const bank = [];
+      rows.forEach(row => {
+        const q = String(row['Question'] ?? '')
+          .replace(/^\s*\[Q\d+\]\s*/i, '')
+          .trim();
+        const opts = [row['Option 1'], row['Option 2'], row['Option 3'], row['Option 4']].filter(o => o !== '');
+        const correct = row['Correct answer'];
+        if (!q || opts.length < 2 || !correct) return;
+        const shuffled = shuffleArray(opts);
+        bank.push({
+          q: q,
+          options: shuffled,
+          correctText: correct,
+          emoji: '',
+          answer: shuffled.indexOf(correct)
+        });
       });
+      QUIZ_DATA[sheetName.toLowerCase()] = bank;
     });
-    // Use sheet name (lowercase) as the topic key
-    QUIZ_DATA[sheetName.toLowerCase()] = bank;
-  });
-  console.log('Quiz data loaded from Excel:', Object.keys(QUIZ_DATA).map(k => k + ': ' + QUIZ_DATA[k].length + ' questions'));
+    console.log('Quiz data loaded successfully.');
+  } catch (err) {
+    console.warn('Could not load Quiz-Bank.xlsx:', err.message);
+  }
 }
+
+async function startApp() {
+  // Initialize maps first so they display immediately
+  try { buildIndiaModule(); } catch(e) { console.error('India map error:', e); }
+  try { buildWorldModule(); } catch(e) { console.error('World map error:', e); }
+
+  // Load quiz data and quiz module independently
+  await loadQuizDataFromExcel();
+  if (typeof buildQuizModule === 'function') {
+    try { buildQuizModule(); } catch(e) { console.error('Quiz module error:', e); }
+  }
+}
+startApp();
 
 /* ===================== MAPS DATA ===================== */
 const STATE_NAMES = {
@@ -424,14 +442,6 @@ function buildWorldModule(){
   init();
 }
 
-/* ===================== APP STARTUP (Excel-driven) ===================== */
-async function startApp() {
-  await loadQuizDataFromExcel();
-  buildIndiaModule();
-  buildWorldModule();
-  buildQuizModule();
-}
-startApp();
 
 /* ===================== CLOCK GRAPHIC RENDERER ===================== */
 function setupClockSVG(svgId, ticksId, outerMinId, hoursId){
