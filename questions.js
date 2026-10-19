@@ -13,7 +13,10 @@ async function loadQuizDataFromExcel() {
     const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
     const bank = [];
     rows.forEach(row => {
-      const q = row['Question'];
+      //const q = row['Question'];
+      const q = String(row['Question'] ?? '')
+  	.replace(/^\s*\[Q\d+\]\s*/i, '')
+  	.trim();
       const opts = [row['Option 1'], row['Option 2'], row['Option 3'], row['Option 4']].filter(o => o !== '');
       const correct = row['Correct answer'];
       if (!q || opts.length < 2 || !correct) return;
