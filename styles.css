@@ -673,3 +673,414 @@ body.page-body {
     padding: 12px !important;
   }
 }
+
+/* ===== SOLAR SYSTEM PAGE ===== */
+body.page-solar {
+  background:
+    radial-gradient(circle at 10% 15%, rgba(63, 81, 181, 0.45), transparent 28%),
+    radial-gradient(circle at 85% 80%, rgba(130, 87, 229, 0.30), transparent 32%),
+    linear-gradient(135deg, #05081d 0%, #101b4f 55%, #25134b 100%);
+}
+
+.page-solar header h1 {
+  color: #ffd54a;
+}
+
+.page-solar header p {
+  color: #f3f5ff;
+}
+
+.solarLayout {
+  width: min(1200px, 96%);
+  margin: 10px auto 22px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 0.8fr);
+  gap: 18px;
+  flex: 1;
+  min-height: 0;
+}
+
+.solarScene {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+  border: 3px solid rgba(157, 189, 255, 0.55);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 55%, rgba(71, 98, 192, 0.28), transparent 45%),
+    linear-gradient(135deg, #040617, #0b1646);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.spaceStars,
+.spaceStars::before,
+.spaceStars::after {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+  background-image:
+    radial-gradient(circle, #ffffff 0 1px, transparent 1.5px),
+    radial-gradient(circle, #b9d9ff 0 1px, transparent 1.5px),
+    radial-gradient(circle, #fff5b8 0 1px, transparent 1.5px);
+  background-size: 72px 72px, 115px 115px, 155px 155px;
+  background-position: 4px 10px, 32px 58px, 85px 22px;
+  opacity: 0.8;
+}
+
+.spaceStars::before {
+  transform: rotate(18deg) scale(1.2);
+  opacity: 0.4;
+}
+
+.spaceStars::after {
+  transform: rotate(-14deg) scale(1.35);
+  opacity: 0.25;
+}
+
+.sun {
+  position: relative;
+  z-index: 2;
+  margin: 0 auto 36px;
+}
+
+.planetRow {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: end;
+  justify-content: space-evenly;
+  gap: clamp(7px, 1.5vw, 20px);
+  width: 100%;
+  overflow-x: auto;
+  padding: 30px 6px 16px;
+}
+
+.planetButton {
+  position: relative;
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 8px 4px;
+  min-width: 55px;
+  font-family: inherit;
+  transition: transform 0.18s ease;
+}
+
+.planetButton:hover,
+.planetButton:focus-visible,
+.planetButton.active {
+  transform: translateY(-8px) scale(1.08);
+  outline: none;
+}
+
+.planetButton:focus-visible .planetVisual {
+  outline: 3px solid #ffffff;
+  outline-offset: 5px;
+}
+
+.planetVisual {
+  display: block;
+  width: var(--planet-size, 40px);
+  height: var(--planet-size, 40px);
+  border-radius: 50%;
+  margin: 0 auto 8px;
+  box-shadow: inset -8px -7px 12px rgba(0, 0, 0, 0.32), 0 0 14px rgba(255, 255, 255, 0.16);
+}
+
+.planetLabel {
+  display: block;
+  font-size: clamp(10px, 1.8vw, 14px);
+  font-weight: 800;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px #000000;
+}
+
+.sun .planetVisual {
+  --planet-size: clamp(78px, 10vw, 112px);
+  background: radial-gradient(circle at 35% 30%, #fffde2 0 10%, #ffdf48 28%, #ff9d00 62%, #e45100 100%);
+  box-shadow: 0 0 18px #ffd429, 0 0 55px #ff9d00, inset -10px -10px 18px rgba(214, 73, 0, 0.42);
+}
+
+.mercury .planetVisual {
+  --planet-size: 20px;
+  background: linear-gradient(135deg, #d5d5d5, #6c6c6c);
+}
+
+.venus .planetVisual {
+  --planet-size: 31px;
+  background: linear-gradient(135deg, #ffe49a, #c98c2d);
+}
+
+.earth .planetVisual {
+  --planet-size: 35px;
+  background: radial-gradient(circle at 35% 35%, #5cd7ff 0 18%, #2879df 19% 55%, #48a64c 56% 65%, #174caa 66%);
+}
+
+.mars .planetVisual {
+  --planet-size: 26px;
+  background: radial-gradient(circle at 32% 28%, #ffad75, #d75332 55%, #8e2f20);
+}
+
+.jupiter .planetVisual {
+  --planet-size: 74px;
+  background: repeating-linear-gradient(180deg, #e8c99f 0 10px, #b76a42 11px 18px, #f6e0b9 19px 28px);
+}
+
+.saturn .planetVisual {
+  --planet-size: 63px;
+  background: radial-gradient(circle at 35% 28%, #fff0b7, #d4ad62 62%, #9a6d36);
+  position: relative;
+}
+
+.saturn .planetVisual::after {
+  content: "";
+  position: absolute;
+  width: 155%;
+  height: 40%;
+  left: -28%;
+  top: 30%;
+  border: 7px solid rgba(237, 218, 155, 0.9);
+  border-radius: 50%;
+  transform: rotate(-18deg);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+}
+
+.uranus .planetVisual {
+  --planet-size: 48px;
+  background: linear-gradient(135deg, #b4f6f5, #43b9d0);
+}
+
+.neptune .planetVisual {
+  --planet-size: 47px;
+  background: linear-gradient(135deg, #5b92ff, #163ea8);
+}
+
+.solarFactCard {
+  color: #eef4ff;
+  background: rgba(12, 25, 70, 0.88);
+  border: 3px solid rgba(168, 194, 255, 0.52);
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+  text-align: center;
+  align-self: center;
+}
+
+.solarFactIcon {
+  font-size: 54px;
+  margin-bottom: 5px;
+}
+
+.solarFactCard h2 {
+  margin: 0 0 10px;
+  color: #ffdf61;
+  font-size: clamp(24px, 4vw, 34px);
+}
+
+.solarFactCard p {
+  margin: 0;
+  line-height: 1.55;
+  font-weight: 600;
+}
+
+.solarFacts {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0 14px;
+}
+
+.solarFactItem {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 10px 12px;
+}
+
+.solarFactItem strong {
+  color: #ffffff;
+  text-align: right;
+}
+
+.solarTrait {
+  background: linear-gradient(135deg, #ffdd57, #ffab35);
+  color: #3a2000;
+  padding: 13px;
+  border-radius: 16px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.solarSpeakBtn {
+  margin-top: 16px;
+  border: 0;
+  border-radius: 24px;
+  padding: 11px 18px;
+  background: #4b7bec;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(75, 123, 236, 0.4);
+}
+
+.solarSpeakBtn:hover {
+  transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .solarLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .solarScene {
+    min-height: 320px;
+  }
+
+  .planetRow {
+    justify-content: flex-start;
+  }
+}
+
+/* ===== CENTRE-SUN SOLAR SYSTEM ===== */
+.solarScene {
+  min-height: 620px;
+  padding: 12px;
+}
+
+.solarSystemMap {
+  position: relative;
+  width: min(94vw, 660px);
+  height: min(78vw, 620px);
+  min-height: 500px;
+  margin: auto;
+  overflow: hidden;
+}
+
+/* Sun stays exactly in the middle */
+.solarSystemMap > .sun {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  top: 50%;
+  margin: 0;
+  transform: translate(-50%, -50%);
+}
+
+.solarSystemMap > .sun:hover,
+.solarSystemMap > .sun:focus-visible,
+.solarSystemMap > .sun.active {
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* Each orbit is an ellipse around the Sun */
+.orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 2px dashed rgba(255, 255, 255, 0.48);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.orbit .planetButton {
+  position: absolute;
+  pointer-events: auto;
+  z-index: 5;
+}
+
+/* Orbit sizes and each planet's visible location */
+.orbit-1 { width: 150px; height: 90px; }
+.orbit-1 .planetButton { right: -24px; top: 4px; }
+
+.orbit-2 { width: 220px; height: 142px; }
+.orbit-2 .planetButton { left: 10px; bottom: -20px; }
+
+.orbit-3 { width: 292px; height: 190px; }
+.orbit-3 .planetButton { right: 16px; bottom: -27px; }
+
+.orbit-4 { width: 365px; height: 240px; }
+.orbit-4 .planetButton { left: 32px; top: -20px; }
+
+.orbit-5 { width: 440px; height: 305px; }
+.orbit-5 .planetButton { right: 26px; top: 4px; }
+
+.orbit-6 { width: 510px; height: 368px; }
+.orbit-6 .planetButton { left: 42px; bottom: -24px; }
+
+.orbit-7 { width: 580px; height: 438px; }
+.orbit-7 .planetButton { right: 45px; bottom: -27px; }
+
+.orbit-8 { width: 640px; height: 510px; }
+.orbit-8 .planetButton { left: 58px; top: 4px; }
+
+/* Keep planet labels readable above the orbit line */
+.orbit .planetLabel {
+  position: relative;
+  z-index: 9;
+}
+
+/* Mobile: compact orbits with tap-friendly planets */
+@media (max-width: 760px) {
+  .solarScene {
+    min-height: 510px;
+  }
+
+  .solarSystemMap {
+    width: 100%;
+    height: 490px;
+    min-height: 490px;
+  }
+
+  .orbit-1 { width: 115px; height: 70px; }
+  .orbit-2 { width: 155px; height: 102px; }
+  .orbit-3 { width: 200px; height: 136px; }
+  .orbit-4 { width: 245px; height: 170px; }
+  .orbit-5 { width: 290px; height: 215px; }
+  .orbit-6 { width: 335px; height: 265px; }
+  .orbit-7 { width: 380px; height: 330px; }
+  .orbit-8 { width: 425px; height: 410px; }
+
+  .orbitNumber {
+    width: 21px;
+    height: 21px;
+    font-size: 12px;
+  }
+
+  .jupiter .planetVisual { --planet-size: 54px; }
+  .saturn .planetVisual { --planet-size: 50px; }
+  .uranus .planetVisual { --planet-size: 38px; }
+  .neptune .planetVisual { --planet-size: 38px; }
+}
+
+/* Solar System: drag planets around their own orbits */
+.page-solar .orbit .planetButton {
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.page-solar .orbit .planetButton.dragging {
+  cursor: grabbing;
+  z-index: 30;
+  filter: drop-shadow(0 0 12px rgba(255, 232, 91, 0.95));
+}
+
+.page-solar .orbit {
+  overflow: visible;
+}
+
+/* Orbit number badges are no longer used */
+.page-solar .orbitNumber {
+  display: none;
+}

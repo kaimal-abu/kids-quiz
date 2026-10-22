@@ -27,6 +27,7 @@
   <button class="pageNavBtn" id="navWonders">🏛️ World Wonders</button>
   <button class="pageNavBtn" id="navQuiz">🧠 Quiz Time</button>
   <button class="pageNavBtn" id="navBody">🧍 Body Parts</button>
+  <button class="pageNavBtn" id="navSolar">☀️ Solar System</button>
 </div>
 
 <!-- ============ PAGE 1: INDIA ============ -->
@@ -261,8 +262,124 @@
 
 <div class="confetti" id="confetti"></div>
 
+<section class="app-page page-solar" id="pageSolarEl">
+  <header>
+    <h1>☀️ Explore the Solar System</h1>
+    <p>Tap a planet to discover amazing space facts!</p>
+  </header>
+
+  <main class="solarLayout">
+    <section class="solarScene" aria-label="Interactive Solar System">
+  <div class="spaceStars"></div>
+
+  <div class="solarSystemMap">
+    <button class="sun planetButton" data-planet="sun" aria-label="Sun">
+      <span class="planetVisual"></span>
+      <span class="planetLabel">Sun</span>
+    </button>
+
+    <div class="orbit orbit-1">
+      <span class="orbitNumber">1</span>
+      <button class="planetButton mercury" data-planet="mercury">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Mercury</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-2">
+      <span class="orbitNumber">2</span>
+      <button class="planetButton venus" data-planet="venus">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Venus</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-3">
+      <span class="orbitNumber">3</span>
+      <button class="planetButton earth" data-planet="earth">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Earth</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-4">
+      <span class="orbitNumber">4</span>
+      <button class="planetButton mars" data-planet="mars">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Mars</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-5">
+      <span class="orbitNumber">5</span>
+      <button class="planetButton jupiter" data-planet="jupiter">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Jupiter</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-6">
+      <span class="orbitNumber">6</span>
+      <button class="planetButton saturn" data-planet="saturn">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Saturn</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-7">
+      <span class="orbitNumber">7</span>
+      <button class="planetButton uranus" data-planet="uranus">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Uranus</span>
+      </button>
+    </div>
+
+    <div class="orbit orbit-8">
+      <span class="orbitNumber">8</span>
+      <button class="planetButton neptune" data-planet="neptune">
+        <span class="planetVisual"></span>
+        <span class="planetLabel">Neptune</span>
+      </button>
+    </div>
+  </div>
+</section>
+    <aside class="solarFactCard" id="solarFactCard" aria-live="polite">
+      <div class="solarFactIcon">🪐</div>
+
+      <h2 id="solarName">Choose a planet</h2>
+
+      <p id="solarIntro">
+        Tap a planet in the Solar System to reveal its fun facts.
+      </p>
+solarS
+      <div class="solarFacts" id="solarFacts" hidden>
+        <div class="solarFactItem">
+          <span>📏 Size</span>
+          <strong id="solarSize"></strong>
+        </div>
+
+        <div class="solarFactItem">
+          <span>🌙 Moons</span>
+          <strong id="solarMoons"></strong>
+        </div>
+
+        <div class="solarFactItem">
+          <span>🔢 Position</span>
+          <strong id="solarPosition"></strong>
+        </div>
+      </div>
+
+      <div class="solarTrait" id="solarTrait" hidden></div>
+
+      <button class="solarSpeakBtn" id="solarSpeakBtn" type="button" hidden>
+        🔊 Read aloud
+      </button>
+    </aside>
+  </main>
+</section>
+
 <script src="questions.js?v=world4"></script>
-<script src="world-layout-fix.js?v=5"></script>
+
 </body>
 
 

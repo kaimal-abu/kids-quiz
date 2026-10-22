@@ -415,6 +415,10 @@ function showPage(page){
     document.getElementById('pageQuizEl')?.classList.add('visible');
     document.getElementById('navQuiz')?.classList.add('active');
     document.body.className = 'page-quiz';
+  } else if(page === 'solar'){
+    document.getElementById("pageSolarEl")?.classList.add("visible");
+    document.getElementById("navSolar")?.classList.add("active");
+    document.body.className = "page-solar";
   }
 }
 
@@ -422,6 +426,7 @@ document.getElementById('navIndia')?.addEventListener('click', () => showPage('i
 document.getElementById('navWorld')?.addEventListener('click', () => showPage('world'));
 document.getElementById('navBody')?.addEventListener('click', () => showPage('body'));
 document.getElementById('navQuiz')?.addEventListener('click', () => showPage('quiz'));
+document.getElementById("navSolar")?.addEventListener("click", () => showPage("solar"));
 
 function quitToQuizHome(){
   try { if('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e){}
@@ -716,6 +721,234 @@ function buildBodyModule(){
     card.classList.toggle('show-hints', hintsVisible);
     e.target.textContent = hintsVisible ? '🟡 Hide Target Spots' : '💡 Show Target Spots';
   });
+}
+
+function buildSolarSystemModule() {
+  const planets = {
+    sun: {
+      icon: "☀️",
+      name: "The Sun",
+      size: "About 109 Earths wide",
+      moons: "8 planets orbit it",
+      position: "Centre of our Solar System",
+      intro: "The Sun is a star. Its light and heat make life possible on Earth.",
+      trait: "Fun fact: The Sun holds more than 99% of all the mass in our Solar System."
+    },
+    mercury: {
+      icon: "🩶",
+      name: "Mercury",
+      size: "0.38 times Earth’s width",
+      moons: "0 moons",
+      position: "1st from the Sun",
+      intro: "Mercury is the smallest and fastest planet.",
+      trait: "Fun fact: One year on Mercury lasts only 88 Earth days."
+    },
+    venus: {
+      icon: "🟡",
+      name: "Venus",
+      size: "0.95 times Earth’s width",
+      moons: "0 moons",
+      position: "2nd from the Sun",
+      intro: "Venus is almost Earth-sized, but it is extremely hot.",
+      trait: "Fun fact: Venus spins in the opposite direction from most planets."
+    },
+    earth: {
+      icon: "🌍",
+      name: "Earth",
+      size: "12,742 km wide",
+      moons: "1 moon",
+      position: "3rd from the Sun",
+      intro: "Earth is our home planet and the only known world with life.",
+      trait: "Fun fact: About 71% of Earth’s surface is covered by water."
+    },
+    mars: {
+      icon: "🔴",
+      name: "Mars",
+      size: "About half Earth’s width",
+      moons: "2 moons",
+      position: "4th from the Sun",
+      intro: "Mars is called the Red Planet because rusty iron minerals colour its soil.",
+      trait: "Fun fact: Olympus Mons on Mars is the largest volcano in the Solar System."
+    },
+    jupiter: {
+      icon: "🟠",
+      name: "Jupiter",
+      size: "About 11 times Earth’s width",
+      moons: "95 known moons",
+      position: "5th from the Sun",
+      intro: "Jupiter is the largest planet in the Solar System.",
+      trait: "Fun fact: Jupiter’s Great Red Spot is a huge storm larger than Earth."
+    },
+    saturn: {
+      icon: "🪐",
+      name: "Saturn",
+      size: "About 9 times Earth’s width",
+      moons: "146 known moons",
+      position: "6th from the Sun",
+      intro: "Saturn is famous for its wide, bright rings.",
+      trait: "Fun fact: Saturn’s rings are mostly made of chunks of ice, dust, and rock."
+    },
+    uranus: {
+      icon: "🔵",
+      name: "Uranus",
+      size: "About 4 times Earth’s width",
+      moons: "28 known moons",
+      position: "7th from the Sun",
+      intro: "Uranus is a pale blue-green ice giant.",
+      trait: "Fun fact: Uranus rotates on its side, like a rolling ball."
+    },
+    neptune: {
+      icon: "🔷",
+      name: "Neptune",
+      size: "About 4 times Earth’s width",
+      moons: "16 known moons",
+      position: "8th from the Sun",
+      intro: "Neptune is the farthest major planet from the Sun.",
+      trait: "Fun fact: Neptune has some of the fastest winds in the Solar System."
+    }
+  };
+
+  const page = document.getElementById("pageSolarEl");
+  const card = document.getElementById("solarFactCard");
+  const icon = card?.querySelector(".solarFactIcon");
+  const name = document.getElementById("solarName");
+  const intro = document.getElementById("solarIntro");
+  const facts = document.getElementById("solarFacts");
+  const size = document.getElementById("solarSize");
+  const moons = document.getElementById("solarMoons");
+  const position = document.getElementById("solarPosition");
+  const trait = document.getElementById("solarTrait");
+  const speakButton = document.getElementById("solarSpeakBtn");
+
+  if (!page || !card) return;
+
+  let selectedPlanet = null;
+
+  function selectPlanet(key) {
+    const planet = planets[key];
+    if (!planet) return;
+
+    selectedPlanet = planet;
+
+    document.querySelectorAll(".page-solar .planetButton").forEach(button => {
+      button.classList.toggle("active", button.dataset.planet === key);
+    });
+
+    icon.textContent = planet.icon;
+    name.textContent = planet.name;
+    intro.textContent = planet.intro;
+    size.textContent = planet.size;
+    moons.textContent = planet.moons;
+    position.textContent = planet.position;
+    trait.textContent = planet.trait;
+
+    facts.hidden = false;
+    trait.hidden = false;
+    speakButton.hidden = false;
+  }
+
+  page.querySelectorAll(".planetButton").forEach(button => {
+    button.addEventListener("click", () => selectPlanet(button.dataset.planet));
+  });
+
+  speakButton.addEventListener("click", () => {
+    if (!selectedPlanet) return;
+
+    speak(
+      `${selectedPlanet.name}. ${selectedPlanet.intro} ` +
+      `Size: ${selectedPlanet.size}. ` +
+      `Moons: ${selectedPlanet.moons}. ` +
+      `${selectedPlanet.trait}`
+    );
+  });
+
+function makePlanetsDraggable() {
+  const map = page.querySelector(".solarSystemMap");
+  if (!map) return;
+
+  let drag = null;
+  let dragged = false;
+
+  function movePlanet(button, clientX, clientY) {
+    const orbit = button.closest(".orbit");
+    if (!orbit) return;
+
+    const orbitBox = orbit.getBoundingClientRect();
+    const centreX = orbitBox.left + orbitBox.width / 2;
+    const centreY = orbitBox.top + orbitBox.height / 2;
+
+    const dx = clientX - centreX;
+    const dy = clientY - centreY;
+
+    const angle = Math.atan2(dy, dx);
+    const radiusX = orbitBox.width / 2;
+    const radiusY = orbitBox.height / 2;
+
+    const x = radiusX + Math.cos(angle) * radiusX;
+    const y = radiusY + Math.sin(angle) * radiusY;
+
+    button.style.left = `${x}px`;
+    button.style.top = `${y}px`;
+    button.style.right = "auto";
+    button.style.bottom = "auto";
+    button.style.transform = "translate(-50%, -50%)";
+  }
+
+  map.querySelectorAll(".orbit .planetButton").forEach((button) => {
+    button.addEventListener("pointerdown", (event) => {
+      event.preventDefault();
+
+      drag = {
+        button,
+        pointerId: event.pointerId,
+        startX: event.clientX,
+        startY: event.clientY
+      };
+
+      dragged = false;
+      button.setPointerCapture?.(event.pointerId);
+      button.classList.add("dragging");
+    });
+
+    button.addEventListener("pointermove", (event) => {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+
+      const distance = Math.hypot(
+        event.clientX - drag.startX,
+        event.clientY - drag.startY
+      );
+
+      if (distance > 6) dragged = true;
+
+      if (dragged) {
+        event.preventDefault();
+        movePlanet(drag.button, event.clientX, event.clientY);
+      }
+    });
+
+    function endDrag(event) {
+      if (!drag || drag.pointerId !== event.pointerId) return;
+
+      drag.button.classList.remove("dragging");
+      drag.button.releasePointerCapture?.(event.pointerId);
+      drag = null;
+    }
+
+    button.addEventListener("pointerup", endDrag);
+    button.addEventListener("pointercancel", endDrag);
+
+    button.addEventListener("click", (event) => {
+      if (dragged) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
+    }, true);
+  });
+}
+
+makePlanetsDraggable();
+
+  selectPlanet("earth");
 }
 
 /* ===================== CLOCK GRAPHIC RENDERER ===================== */
@@ -1264,12 +1497,14 @@ function buildQuizModule(){
   };
 }
 
+
 /* ===================== APP STARTUP ===================== */
 async function startApp(){
   prepareLearningScreens();
   try { buildIndiaModule(); } catch(e){ console.error('India map error:', e); }
   try { buildWorldModule(); } catch(e){ console.error('World map error:', e); }
   try { buildBodyModule(); } catch(e){ console.error('Body module error:', e); }
+  try { buildSolarSystemModule(); } catch(e){ console.error('Solar System module error:', e); }
 
   try {
     await loadQuizDataFromExcel();
