@@ -1,24 +1,7 @@
-WORLD LAYOUT PATCH V5 — for the latest World Globe v4 app
-This is a patch, not a replacement with older source files. It preserves your current questions.js, styles.css, globe and five-second quiz reveal.
-
-INSTALL AUTOMATICALLY
-1. Extract world-layout-fix.js and install_world_layout_fix.py into the folder containing your CURRENT index.html (the v4 app with world wonders).
-2. Run: python install_world_layout_fix.py
-3. Hard-refresh browser. Android: copy updated index.html and world-layout-fix.js into assets, keeping other files, and rebuild.
-The installer backs up index.html and adds one script reference. It is safe to run again.
-
-OR INSTALL MANUALLY
-Place world-layout-fix.js alongside your current index.html. Insert this AFTER questions.js and immediately before </body>:
-<script src="world-layout-fix.js?v=5"></script>
-No need to replace questions.js or styles.css.
-
-CHANGES
-Globe section no longer flex-shrinks to a narrow strip. Full SVG aspect ratio preserved and world pages scroll vertically.
-Mouse wheel scrolls the page instead of being captured for globe zoom; use +/- buttons for zoom.
-On phones, default swipe scrolls. Tap Touch mode: Scroll to switch to Spin globe when rotating. Tap again to restore scrolling.
-World Wonders removed from top navigation and accessible inside World Map. Both globe subviews include Home and World Map / World Wonders buttons.
-Home opens a new simple menu for India Map, World Map, Quiz Time and Body Parts. Wonders is not a home tile.
-Only applies layout changes to world, wonders and the new home page. Other page layouts are not altered.
-
-VALIDATION
-JavaScript syntax checked; Python installer syntax checked and tested for script insertion, backup preservation and safe repeat execution. Browser/Android visual and touch-device testing still required.
+QUIZ SUBJECT CENTRING FIX — FULL REPLACEMENT FILES
+Replace BOTH questions.js and styles.css with these files. Keep index.html, images and Quiz-Bank.xlsx. Hard-refresh browser (Ctrl+Shift+R); Android: replace both assets and rebuild.
+The old grid rules inside the script and duplicated grid/flex centring attempts in styles.css have been removed. The replacement uses centred wrapping Flexbox rows in both quiz modes.
+Wide screen: 4 columns. Medium: 3. Small: 2. Incomplete final rows are centred. Text is centred inside tiles.
+No separate patch or updater needed. Remove separate quiz-centre-fix.js references if you added one earlier.
+Browser verification: Chromium, with actual uploaded HTML and replacement JS/CSS, network disabled. Both Single Player and Arcade tested at widths 2488, 1366, 900 and 390 pixels. Row centres checked to within 1px. Ten-subject test confirmed centred final row of two. Picker hiding also checked. Online map loads and Android WebView were not tested in this run.
+Existing map, flashcard, quiz logic and body features preserved; this update changes only quiz subject layout styles and its visibility class name.

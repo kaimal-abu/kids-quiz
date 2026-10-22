@@ -616,3 +616,60 @@ body.page-body {
 #flagImgWO{width:64px;height:42px;object-fit:contain}#pageWondersEl .banner{max-width:900px;margin:16px auto;padding:20px}
 #pageNav{flex-wrap:wrap!important;height:auto!important}.earthButtons span{font:14px Arial;color:#375969}
 @media(max-width:600px){.earthButtons button{font-size:14px;padding:10px 12px}.earthButtons span{flex-basis:100%;text-align:center}}
+
+/* Single source of truth: centred Flexbox subject rows. */
+#pageQuizEl #quizTopicPicker.lfSubjectFlex,
+#pageQuizEl #arcadeTopicPicker.lfSubjectFlex {
+  --lf-subject-width: calc((100% - 54px) / 4);
+  display: flex !important;
+  flex-flow: row wrap !important;
+  justify-content: center !important;
+  align-items: center !important;
+  align-content: safe center !important;
+  gap: 18px !important;
+  width: 100% !important;
+  max-width: none !important;
+  height: auto !important;
+  min-height: 0 !important;
+  flex: 1 1 0 !important;
+  padding: 20px !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+  overflow: auto !important;
+}
+#pageQuizEl #quizTopicPicker.lfSubjectFlex .topicBtn,
+#pageQuizEl #arcadeTopicPicker.lfSubjectFlex .topicBtn {
+  display: flex !important;
+  flex: 0 0 var(--lf-subject-width) !important;
+  width: var(--lf-subject-width) !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: clamp(110px, 23vh, 200px) !important;
+  min-height: 110px !important;
+  max-height: 200px !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  margin: 0 !important;
+  padding: 14px !important;
+  box-sizing: border-box !important;
+  border-width: 3px !important;
+  border-radius: 25px !important;
+  white-space: normal !important;
+  font: 700 clamp(20px, 2.1vw, 32px)/1.3 Arial, sans-serif !important;
+  box-shadow: 0 8px 20px #a6337a18;
+}
+@media (max-width: 1000px) {
+  #pageQuizEl #quizTopicPicker.lfSubjectFlex,
+  #pageQuizEl #arcadeTopicPicker.lfSubjectFlex {
+    --lf-subject-width: calc((100% - 36px) / 3);
+  }
+}
+@media (max-width: 650px) {
+  #pageQuizEl #quizTopicPicker.lfSubjectFlex,
+  #pageQuizEl #arcadeTopicPicker.lfSubjectFlex {
+    --lf-subject-width: calc((100% - 12px) / 2);
+    gap: 12px !important;
+    padding: 12px !important;
+  }
+}
