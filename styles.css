@@ -361,3 +361,258 @@ html, body {
 #pageQuizEl.visible {
   display: flex;
 }
+
+/* ============ BODY PARTS PAGE STYLES ============ */
+body.page-body {
+  background: linear-gradient(135deg, #e0f2fe 0%, #fdf2f8 100%);
+}
+
+.bodyGraphicWrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  width: 100%;
+}
+
+.bodyGraphicCard {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.bodyImg {
+  width: 100%;
+  height: auto;
+  display: block;
+  pointer-events: none;
+}
+
+/* Clickable touch targets */
+.bodyHotspot {
+  position: absolute;
+  border-radius: 18px;
+  cursor: pointer;
+  background: rgba(255, 235, 59, 0.0);
+  border: 2px dashed transparent;
+  transition: all 0.2s ease-in-out;
+  touch-action: manipulation;
+  z-index: 5;
+}
+
+/* On hover / tap interaction */
+.bodyHotspot:active,
+.bodyHotspot.active {
+  background: rgba(46, 204, 113, 0.4) !important;
+  border-color: #27ae60 !important;
+  transform: scale(1.04);
+}
+
+/* Target spots guide toggle */
+.show-hints .bodyHotspot {
+  background: rgba(255, 193, 7, 0.18);
+  border-color: rgba(245, 158, 11, 0.6);
+}
+
+.bodyHotspot.wrong-tap {
+  background: rgba(231, 76, 60, 0.45) !important;
+  border-color: #c0392b !important;
+}
+.bodyGraphicCard { aspect-ratio: 765 / 1024; }
+.bodyImg { width:100%; height:100%; object-fit:fill; }
+.bodyTargets { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+.bodyTargets .bodyHotspot { position:static; fill:transparent; stroke:transparent; stroke-width:2; pointer-events:all; cursor:pointer; transform:none !important; transition:fill .15s; }
+.bodyTargets .bodyHotspot.active { fill:rgba(46,204,113,.3); stroke:#27ae60; }
+.bodyTargets .bodyHotspot.wrong-tap { fill:rgba(231,76,60,.4); stroke:#c0392b; }
+.show-hints .bodyTargets .bodyHotspot { fill:rgba(255,193,7,.18); stroke:#e99a13; }
+.bodyTargets .bodyHotspot:focus-visible { stroke:#2563eb; stroke-width:4; outline:none; }
+.bodyTag { position:absolute; z-index:8; pointer-events:none; display:none; transform:translate(-50%,-135%); background:#fff; color:#2c3e50; border:3px solid #27ae60; border-radius:16px; padding:4px 12px; font-weight:bold; font-size:clamp(13px,3.6vw,18px); box-shadow:0 4px 12px rgba(0,0,0,.25); white-space:nowrap; }
+.bodyTag::after { content:""; position:absolute; left:50%; top:100%; margin-left:-7px; border:7px solid transparent; border-top-color:#27ae60; }
+.bodyTag.show { display:block; animation:tagPop .25s ease-out; }
+.bodyTag.wrong { border-color:#c0392b; } .bodyTag.wrong::after { border-top-color:#c0392b; }
+@keyframes tagPop { from { transform:translate(-50%,-110%) scale(.6); opacity:0 } to { transform:translate(-50%,-135%) scale(1); opacity:1 } }
+
+/* Background & Land styling */
+.ocean-bg {
+  fill: #cbe5ff;
+}
+
+.land-group path {
+  fill: #d5eed9;
+  stroke: #ffffff;
+  stroke-width: 0.7;
+  cursor: pointer;
+  transition: fill 0.15s ease;
+}
+
+.land-group path:hover {
+  fill: #a8dfb5;
+}
+
+.land-group path.active {
+  fill: #ff7675 !important;
+  stroke: #c0392b;
+  stroke-width: 1.4;
+}
+
+/* Water Bodies & Labels */
+.water-item {
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.water-dot {
+  fill: #2980b9;
+  stroke: #ffffff;
+  stroke-width: 2;
+  opacity: 0.65;
+  transition: all 0.2s ease;
+}
+
+.water-item:hover .water-dot,
+.water-item.active .water-dot {
+  fill: #e74c3c;
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+.water-label {
+  font-family: inherit;
+  font-weight: 700;
+  fill: #0c4a75;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  pointer-events: none;
+  user-select: none;
+}
+
+.water-label.ocean {
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.water-label.sea {
+  font-size: 10px;
+  font-style: italic;
+  fill: #195e8b;
+}
+
+/* Ensure map wrapper and holder have explicit rendering boundaries */
+.mapWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 4px 8px 8px;
+  position: relative;
+  min-height: 380px; /* Prevents height collapse */
+  width: 100%;
+}
+
+.mapSvgHolder {
+  width: 100%;
+  height: 100%;
+  max-width: 1000px;
+  min-height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.mapSvgHolder svg {
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,0.12));
+}
+
+/* Water & Ocean Styling */
+.ocean-bg {
+  fill: #cbe5ff;
+}
+
+.land-group path {
+  fill: #d5eed9;
+  stroke: #ffffff;
+  stroke-width: 0.7;
+  cursor: pointer;
+  transition: fill 0.15s ease;
+}
+
+.land-group path:hover {
+  fill: #a8dfb5;
+}
+
+.land-group path.active {
+  fill: #ff7675 !important;
+  stroke: #c0392b;
+  stroke-width: 1.4;
+}
+
+.water-item {
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.water-dot {
+  fill: #2980b9;
+  stroke: #ffffff;
+  stroke-width: 2;
+  opacity: 0.65;
+  transition: all 0.2s ease;
+}
+
+.water-item:hover .water-dot,
+.water-item.active .water-dot {
+  fill: #e74c3c;
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+.water-label {
+  font-family: inherit;
+  font-weight: 700;
+  fill: #0c4a75;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  pointer-events: none;
+  user-select: none;
+}
+
+.water-label.ocean {
+  font-size: 13px;
+  letter-spacing: 1px;
+}
+
+.water-label.sea {
+  font-size: 10px;
+  font-style: italic;
+  fill: #195e8b;
+}
+/* World globe + five-second learning reveal */
+.earthButtons{display:flex!important;justify-content:center;align-items:center;gap:10px;flex-wrap:wrap;max-width:1000px;margin:12px auto;padding:0 10px}
+.earthButtons button{display:inline-block!important;background:white;border:1px solid #9bcada;border-radius:22px;padding:12px 16px;font:600 16px Arial;color:#19566d;cursor:pointer;min-height:44px}
+.earthButtons button.active{background:#087eb0;color:white}.earthButtons button:disabled{opacity:.5;cursor:default}.earthButtons select{max-width:90vw;background:white;border:1px solid #9bcada;border-radius:12px;padding:12px;font-size:16px}
+.earthWrap{max-width:1000px;width:96%;margin:12px auto;border-radius:28px;overflow:hidden;border:2px solid #b9ddea;background:#eaf7ff}
+.earthWrap .earthSvg{display:block!important;width:100%!important;height:auto!important;max-height:76vh;touch-action:none;cursor:grab;background:radial-gradient(ellipse at center,#c4e9ff,#eff9ff 72%)}
+#mapHolderWO,#wonderMap{display:block!important;background:transparent!important;height:auto!important;min-height:280px;padding:0!important}
+.earthCountry{cursor:pointer;pointer-events:auto}.earthLabels,.earthPlace{display:inline!important;visibility:visible!important;opacity:1!important;pointer-events:all!important}.earthPlace{cursor:pointer}.earthPlace text{pointer-events:none;stroke:none!important;display:inline!important;visibility:visible!important;opacity:1!important}
+#worldDetails,#wonderPlace{font:600 clamp(16px,2.3vw,22px) Arial;line-height:1.6;color:#225847;text-align:center;margin-top:10px}
+#worldClock,#worldStatus{text-align:center;font:600 16px Arial;color:#6b531e;min-height:22px;margin:8px}
+#flagImgWO{width:64px;height:42px;object-fit:contain}#pageWondersEl .banner{max-width:900px;margin:16px auto;padding:20px}
+#pageNav{flex-wrap:wrap!important;height:auto!important}.earthButtons span{font:14px Arial;color:#375969}
+@media(max-width:600px){.earthButtons button{font-size:14px;padding:10px 12px}.earthButtons span{flex-basis:100%;text-align:center}}

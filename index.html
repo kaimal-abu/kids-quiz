@@ -7,8 +7,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
 <script src="https://cdn.jsdelivr.net/npm/topojson-client@3"></script>
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="styles.css?v=world4">
 </head>
 <body class="page-india">
 
@@ -25,7 +24,9 @@
 <div id="pageNav">
   <button class="pageNavBtn active" id="navIndia">🇮🇳 India Map</button>
   <button class="pageNavBtn" id="navWorld">🌍 World Map</button>
+  <button class="pageNavBtn" id="navWonders">🏛️ World Wonders</button>
   <button class="pageNavBtn" id="navQuiz">🧠 Quiz Time</button>
+  <button class="pageNavBtn" id="navBody">🧍 Body Parts</button>
 </div>
 
 <!-- ============ PAGE 1: INDIA ============ -->
@@ -57,32 +58,60 @@
 
 <!-- ============ PAGE 2: WORLD ============ -->
 <div class="app-page" id="pageWorldEl">
+<header><h1>🌍 Our Blue Planet</h1><p>Explore the globe or find a country. Quiz answers appear after 5 seconds.</p></header>
+<div id="worldLayers" class="earthButtons"><button data-layer="countries">🌍 Countries</button><button data-layer="continents">🌐 Continents</button><button data-layer="oceans">🌊 Oceans</button></div>
+<div id="worldItems" class="earthButtons"></div>
+<div class="modeBar"><button class="modeBtn active" id="modeExploreWO">Explore</button><button class="modeBtn" id="modeQuizStateWO">🎯 Find the Country</button><button class="modeBtn" id="modeQuizCapitalWO">🏛️ Find by Capital</button></div>
+<div class="banner" id="bannerWO"><div class="row1"><img id="flagImgWO" alt="Country flag" style="display:none"><span class="stateName" id="nameTextWO">Tap a country</span></div><div id="worldDetails"></div></div>
+<div id="quizBarWO" class="quizBar" style="display:none" aria-live="polite"></div><div id="worldClock" role="status"></div>
+<div class="earthButtons"><button id="worldNext" style="display:none">Next Question ➜</button></div><div id="worldStatus" role="status"></div>
+<div class="earthButtons"><button id="earthZoomIn" aria-label="Zoom in">＋</button><button id="earthZoomOut" aria-label="Zoom out">−</button><span>Drag to spin · Scroll to zoom</span></div>
+<div class="earthWrap"><div id="mapHolderWO">Loading globe…</div></div>
+<div class="controls"><button class="ctrl" id="speakBtnWO">🔊 Say it again</button><button class="ctrl" id="resetBtnWO">Reset</button></div></div>
+<div class="app-page" id="pageWondersEl"><header><h1>🏛️ World Wonders</h1><p>Choose one of the New Seven Wonders to find it on Earth.</p></header><div id="wonderItems" class="earthButtons"></div><div class="banner"><div class="stateName" id="wonderName">Choose a wonder</div><div id="wonderPlace">Its location will appear here</div></div><div class="earthButtons"><button id="wondersZoomIn" aria-label="Zoom in">＋</button><button id="wondersZoomOut" aria-label="Zoom out">−</button><span>Drag to spin · Tap a marker to explore</span></div><div class="earthWrap"><div id="wonderMap">Loading wonders globe…</div></div></div>
+
+<!-- ============ PAGE: BODY PARTS ============ -->
+<div class="app-page" id="pageBodyEl">
   <header>
-    <h1>🌍 Tap the Country! 🌍</h1>
-    <p>Touch any country to learn its name, flag, and capital</p>
+    <h1>🧍 Tap the Body Part! 🧍</h1>
+    <p>Touch any part of the body to learn its name, or play the quiz!</p>
   </header>
+
   <div class="modeBar">
-    <button class="modeBtn active" id="modeExploreWO">🗺️ Explore</button>
-    <button class="modeBtn" id="modeQuizStateWO">🎯 Find the Country</button>
-    <button class="modeBtn" id="modeQuizCapitalWO">🏛️ Find by Capital</button>
+    <button class="modeBtn active" id="modeExploreBody">🔍 Explore & Learn</button>
+    <button class="modeBtn" id="modeQuizBody">🎯 Find the Part</button>
   </div>
-  <div class="banner" id="bannerWO">
+
+  <div class="banner" id="bannerBody">
     <div class="row1">
-      <span class="flag" id="flagWO">👉</span>
-      <img class="flagImg" id="flagImgWO" alt="flag">
-      <span class="stateName" id="nameTextWO">Tap a country to begin!</span>
+      <span class="flag">👉</span>
+      <span class="stateName" id="nameTextBody">Tap any body part to begin!</span>
     </div>
-    <div class="capitalRow" id="capRowWO" style="display:none;"><span class="cap-icon">🏛️</span><span id="capTextWO">Capital: —</span></div>
+    <div class="factsGrid" id="factsGridBody" style="display:none;">
+      <span class="factItem"><span class="factIcon">💡</span><span id="funFactBody">Fact: —</span></span>
+    </div>
   </div>
-  <div class="quizBar" id="quizBarWO"></div>
-  <div class="mapWrap"><div class="mapSvgHolder" id="mapHolderWO"><div class="loading"><span class="spinner">🌍</span><span>Loading world map…</span></div></div></div>
+
+  <div class="quizBar" id="quizBarBody" style="display:none;"></div>
+
+  <div class="bodyGraphicWrap">
+    <div class="bodyGraphicCard">
+      <!-- Image file in the same folder -->
+      <img src="body.jpg" alt="Human Body Illustration" class="bodyImg" id="bodyImage">
+
+      <svg class="bodyTargets" viewBox="0 0 765 1024" preserveAspectRatio="none" aria-label="Interactive body parts"><polygon class="bodyHotspot" data-name="Hair" data-fact="Hair grows on your head." points="260,218 260,166 278,125 310,107 329,94 331,111 366,93 419,94 469,116 459,123 485,148 505,186 505,231 482,245 478,220 445,206 435,178 445,210 414,199 395,177 402,198 370,192 339,163 325,192 309,207 313,183 294,211 277,224 278,249 268,249" tabindex="0" role="button" aria-label="Hair"><title>Hair</title></polygon><polygon class="bodyHotspot" data-name="Head" data-fact="Your head contains your brain." points="299,216 333,193 362,207 405,212 461,220 461,237 303,237" tabindex="0" role="button" aria-label="Head"><title>Head</title></polygon><polygon class="bodyHotspot" data-name="Eyes" data-fact="Your eyes help you see." points="310,243 344,239 352,253 350,274 337,280 318,275 309,262" tabindex="0" role="button" aria-label="Eyes"><title>Eyes</title></polygon><polygon class="bodyHotspot" data-name="Eyes" data-fact="Your eyes help you see." points="421,243 445,240 459,254 458,273 442,280 423,275 416,258" tabindex="0" role="button" aria-label="Eyes"><title>Eyes</title></polygon><polygon class="bodyHotspot" data-name="Ears" data-fact="Your ears help you hear." points="263,253 277,254 287,268 288,299 273,303 258,292 252,273" tabindex="0" role="button" aria-label="Ears"><title>Ears</title></polygon><polygon class="bodyHotspot" data-name="Ears" data-fact="Your ears help you hear." points="487,254 502,254 515,264 514,285 503,299 483,302 480,279" tabindex="0" role="button" aria-label="Ears"><title>Ears</title></polygon><polygon class="bodyHotspot" data-name="Nose" data-fact="Your nose helps you smell." points="373,273 390,273 399,289 388,298 370,294" tabindex="0" role="button" aria-label="Nose"><title>Nose</title></polygon><polygon class="bodyHotspot" data-name="Cheeks" data-fact="Your cheeks move when you smile." points="296,280 326,280 339,295 330,309 303,307 292,295" tabindex="0" role="button" aria-label="Cheeks"><title>Cheeks</title></polygon><polygon class="bodyHotspot" data-name="Cheeks" data-fact="Your cheeks move when you smile." points="429,282 462,280 477,292 465,307 435,307 424,297" tabindex="0" role="button" aria-label="Cheeks"><title>Cheeks</title></polygon><polygon class="bodyHotspot" data-name="Mouth" data-fact="Your mouth helps you talk and eat." points="347,302 366,307 399,307 417,301 427,318 403,331 365,331 342,317" tabindex="0" role="button" aria-label="Mouth"><title>Mouth</title></polygon><polygon class="bodyHotspot" data-name="Neck" data-fact="Your neck supports your head." points="359,358 409,358 410,375 426,381 414,397 361,396 345,381 357,375" tabindex="0" role="button" aria-label="Neck"><title>Neck</title></polygon><polygon class="bodyHotspot" data-name="Shoulders" data-fact="Your shoulders connect your arms to your body." points="342,382 357,400 329,421 303,435 280,425 294,403 317,390" tabindex="0" role="button" aria-label="Shoulders"><title>Shoulders</title></polygon><polygon class="bodyHotspot" data-name="Shoulders" data-fact="Your shoulders connect your arms to your body." points="429,383 454,392 475,410 484,427 462,435 443,414 417,402" tabindex="0" role="button" aria-label="Shoulders"><title>Shoulders</title></polygon><polygon class="bodyHotspot" data-name="Chest" data-fact="Your chest protects your heart and lungs." points="319,421 352,406 412,406 449,423 451,481 313,481" tabindex="0" role="button" aria-label="Chest"><title>Chest</title></polygon><polygon class="bodyHotspot" data-name="Stomach" data-fact="Your stomach helps digest food." points="312,485 451,485 464,560 443,569 322,569 303,561" tabindex="0" role="button" aria-label="Stomach"><title>Stomach</title></polygon><polygon class="bodyHotspot" data-name="Arms" data-fact="Your arms help you reach and lift." points="279,430 305,444 285,483 263,476 263,462" tabindex="0" role="button" aria-label="Arms"><title>Arms</title></polygon><polygon class="bodyHotspot" data-name="Arms" data-fact="Your arms help you reach and lift." points="456,443 484,432 505,473 482,485" tabindex="0" role="button" aria-label="Arms"><title>Arms</title></polygon><polygon class="bodyHotspot" data-name="Arms" data-fact="Your arms help you reach and lift." points="242,509 260,525 218,575 201,559" tabindex="0" role="button" aria-label="Arms"><title>Arms</title></polygon><polygon class="bodyHotspot" data-name="Arms" data-fact="Your arms help you reach and lift." points="508,526 527,509 566,559 548,575" tabindex="0" role="button" aria-label="Arms"><title>Arms</title></polygon><polygon class="bodyHotspot" data-name="Elbows" data-fact="Your elbows help your arms bend." points="257,478 282,489 264,519 239,505" tabindex="0" role="button" aria-label="Elbows"><title>Elbows</title></polygon><polygon class="bodyHotspot" data-name="Elbows" data-fact="Your elbows help your arms bend." points="484,490 506,478 527,503 507,521" tabindex="0" role="button" aria-label="Elbows"><title>Elbows</title></polygon><polygon class="bodyHotspot" data-name="Hands" data-fact="Your hands help you hold things." points="198,560 218,578 209,605 190,613 166,598 179,584 154,578 153,565 174,565" tabindex="0" role="button" aria-label="Hands"><title>Hands</title></polygon><polygon class="bodyHotspot" data-name="Hands" data-fact="Your hands help you hold things." points="550,578 569,560 593,565 614,565 617,577 593,585 606,598 578,615 558,604" tabindex="0" role="button" aria-label="Hands"><title>Hands</title></polygon><polygon class="bodyHotspot" data-name="Fingers" data-fact="Your fingers help you grip small things." points="164,600 188,616 207,607 205,626 197,637 187,630 178,636 170,629 157,631 155,620 146,616 149,607" tabindex="0" role="button" aria-label="Fingers"><title>Fingers</title></polygon><polygon class="bodyHotspot" data-name="Fingers" data-fact="Your fingers help you grip small things." points="578,618 606,601 624,611 618,621 609,620 611,631 601,633 593,629 584,637 573,632 563,612" tabindex="0" role="button" aria-label="Fingers"><title>Fingers</title></polygon><polygon class="bodyHotspot" data-name="Legs" data-fact="Your legs help you stand and walk." points="298,683 371,689 359,746 304,746" tabindex="0" role="button" aria-label="Legs"><title>Legs</title></polygon><polygon class="bodyHotspot" data-name="Legs" data-fact="Your legs help you stand and walk." points="398,689 473,682 467,746 409,746" tabindex="0" role="button" aria-label="Legs"><title>Legs</title></polygon><polygon class="bodyHotspot" data-name="Legs" data-fact="Your legs help you stand and walk." points="305,791 355,791 349,856 310,856" tabindex="0" role="button" aria-label="Legs"><title>Legs</title></polygon><polygon class="bodyHotspot" data-name="Legs" data-fact="Your legs help you stand and walk." points="411,791 462,791 458,856 419,856" tabindex="0" role="button" aria-label="Legs"><title>Legs</title></polygon><polygon class="bodyHotspot" data-name="Knees" data-fact="Your knees help your legs bend." points="305,750 359,750 355,788 306,788" tabindex="0" role="button" aria-label="Knees"><title>Knees</title></polygon><polygon class="bodyHotspot" data-name="Knees" data-fact="Your knees help your legs bend." points="409,750 466,750 463,788 412,788" tabindex="0" role="button" aria-label="Knees"><title>Knees</title></polygon><polygon class="bodyHotspot" data-name="Ankles" data-fact="Your ankles connect your legs to your feet." points="310,861 348,861 352,899 307,904" tabindex="0" role="button" aria-label="Ankles"><title>Ankles</title></polygon><polygon class="bodyHotspot" data-name="Ankles" data-fact="Your ankles connect your legs to your feet." points="420,861 458,861 461,902 416,899" tabindex="0" role="button" aria-label="Ankles"><title>Ankles</title></polygon><polygon class="bodyHotspot" data-name="Feet" data-fact="Your feet help you balance and walk." points="306,907 353,903 350,924 310,958 290,959 261,942 263,927" tabindex="0" role="button" aria-label="Feet"><title>Feet</title></polygon><polygon class="bodyHotspot" data-name="Feet" data-fact="Your feet help you balance and walk." points="415,904 461,907 502,927 508,941 478,961 454,955 419,926" tabindex="0" role="button" aria-label="Feet"><title>Feet</title></polygon></svg>
+      <div class="bodyTag" id="bodyTag" aria-live="polite"></div>
+    </div>
+  </div>
+
   <div class="controls">
-    <button class="ctrl btn-secondary" id="speakBtnWO">🔊 Say it again</button>
-    <button class="ctrl btn-reset" id="resetBtnWO">🔄 Reset</button>
+    <button class="ctrl btn-secondary" id="speakBtnBody">🔊 Say it again</button>
+    <button class="ctrl btn-toggle" id="toggleHintsBody">💡 Show Target Spots</button>
+    <button class="ctrl btn-reset" id="resetBtnBody">🔄 Reset</button>
   </div>
 </div>
 
-<!-- ============ PAGE 3: QUIZ TIME ============ -->
+<!-- ============ PAGE 4: QUIZ TIME ============ -->
 <div class="app-page" id="pageQuizEl">
   <header>
     <h1>🧠 Fun Quiz Time! 🧠</h1>
@@ -232,7 +261,8 @@
 
 <div class="confetti" id="confetti"></div>
 
-<script src="questions.js"></script>
+<script src="questions.js?v=world4"></script>
+<script src="world-layout-fix.js?v=5"></script>
 </body>
 
 
